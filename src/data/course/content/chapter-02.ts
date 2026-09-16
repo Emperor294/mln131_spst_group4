@@ -1,0 +1,258 @@
+import { getChapterReviewSourceRefs, getLessonTextbookSourceRefs } from "../lesson-page-map";
+import type { LessonAcademicContent, LessonId } from "../types";
+import { textbookReference } from "./textbook-reference";
+
+type ChapterTwoLessonId = Extract<LessonId, `ch02-${string}`>;
+
+const refs = {
+  workerConcept: textbookReference("ref-ch02-l01-worker-concept", 52, 55, 49, 52),
+  workerCharacteristics: textbookReference("ref-ch02-l01-characteristics", 55, 56, 52, 53),
+  missionDomains: textbookReference("ref-ch02-l01-mission-domains", 56, 59, 53, 56),
+  objectiveConditions: textbookReference("ref-ch02-l01-objective-conditions", 60, 62, 57, 59),
+  subjectiveConditions: textbookReference("ref-ch02-l01-subjective-conditions", 62, 64, 59, 61),
+  stableCharacteristics: textbookReference("ref-ch02-l02-stable-characteristics", 65, 66, 62, 63),
+  contemporaryChanges: textbookReference("ref-ch02-l02-contemporary-changes", 67, 69, 64, 66),
+  currentMissionDomains: textbookReference("ref-ch02-l02-current-mission-domains", 69, 71, 66, 68),
+  vietnamWorkerCharacteristics: textbookReference("ref-ch02-l03-vietnam-characteristics", 72, 76, 69, 73),
+  vietnamMissionDomains: textbookReference("ref-ch02-l03-vietnam-mission-domains", 76, 80, 73, 77),
+  developmentDirection: textbookReference("ref-ch02-l03-development-direction", 80, 82, 77, 79),
+  primarySolutions: textbookReference("ref-ch02-l03-primary-solutions", 80, 83, 77, 80),
+} as const;
+
+const [reviewRef] = getChapterReviewSourceRefs("chapter-02");
+
+export const CHAPTER_02_LESSON_CONTENT = {
+  "ch02-lesson-01": {
+    summary: "Phân tích khái niệm, đặc điểm, ba nội dung và các điều kiện thực hiện sứ mệnh lịch sử của giai cấp công nhân.",
+    status: "verified",
+    sourceRefs: getLessonTextbookSourceRefs("ch02-lesson-01"),
+    sections: [
+      {
+        id: "section-ch02-l01-worker-definition",
+        order: 1,
+        type: "definition",
+        title: "Khái niệm giai cấp công nhân",
+        term: "Giai cấp công nhân",
+        definition: "Một tập đoàn xã hội hình thành và phát triển cùng nền công nghiệp hiện đại, lao động bằng phương thức công nghiệp và đại diện cho phương thức sản xuất có tính xã hội hóa ngày càng cao. Trong quan hệ sản xuất tư bản chủ nghĩa, họ không sở hữu tư liệu sản xuất chủ yếu, phải bán sức lao động và có lợi ích cơ bản đối lập với giai cấp tư sản.",
+        status: "verified",
+        sourceRefs: [refs.workerConcept],
+      },
+      {
+        id: "section-ch02-l01-two-dimensions",
+        order: 2,
+        type: "principles",
+        title: "Hai phương diện xác định giai cấp công nhân",
+        status: "verified",
+        items: [
+          { id: "economic-social", label: "Kinh tế – xã hội", title: "Chủ thể của sản xuất công nghiệp hiện đại", content: "Giai cấp công nhân trực tiếp hoặc gián tiếp vận hành công cụ sản xuất công nghiệp, lao động trong quá trình ngày càng hiện đại, xã hội hóa và có năng suất cao." },
+          { id: "political-social", label: "Chính trị – xã hội", title: "Địa vị trong quan hệ sản xuất tư bản chủ nghĩa", content: "Do không sở hữu tư liệu sản xuất chủ yếu, công nhân phải bán sức lao động, bị chiếm đoạt giá trị thặng dư và có lợi ích cơ bản đối lập với giai cấp tư sản." },
+        ],
+        sourceRefs: [refs.workerConcept],
+      },
+      {
+        id: "section-ch02-l01-characteristics",
+        order: 3,
+        type: "principles",
+        title: "Đặc điểm chủ yếu của giai cấp công nhân",
+        status: "verified",
+        items: [
+          { id: "industrial-labor", title: "Phương thức lao động công nghiệp", content: "Lao động gắn với máy móc, năng suất cao và quá trình sản xuất mang tính xã hội hóa." },
+          { id: "advanced-production", title: "Đại biểu cho lực lượng sản xuất tiên tiến", content: "Là sản phẩm của đại công nghiệp và chủ thể của quá trình sản xuất vật chất hiện đại." },
+          { id: "organization-discipline", title: "Tổ chức, kỷ luật và hợp tác", content: "Nền sản xuất đại công nghiệp rèn luyện tính tổ chức, kỷ luật lao động, tinh thần hợp tác và tác phong công nghiệp." },
+        ],
+        sourceRefs: [refs.workerCharacteristics],
+      },
+      {
+        id: "section-ch02-l01-mission-key-idea",
+        order: 4,
+        type: "key-idea",
+        title: "Sứ mệnh lịch sử tổng quát",
+        status: "verified",
+        content: "Thông qua chính đảng tiền phong, giai cấp công nhân tổ chức và lãnh đạo nhân dân lao động đấu tranh xóa bỏ chế độ áp bức, bóc lột, giải phóng giai cấp và xã hội, hướng tới xây dựng xã hội cộng sản chủ nghĩa.",
+        sourceRefs: [refs.missionDomains],
+      },
+      {
+        id: "section-ch02-l01-mission-diagram",
+        order: 5,
+        type: "diagram",
+        title: "Ba nội dung của sứ mệnh lịch sử",
+        status: "verified",
+        intro: "Ba phương diện có quan hệ thống nhất trong quá trình cải tạo xã hội cũ và xây dựng xã hội mới.",
+        nodes: [
+          { id: "mission", label: "Sứ mệnh lịch sử" },
+          { id: "economic", label: "Kinh tế", description: "Phát triển lực lượng sản xuất, tạo tiền đề vật chất – kỹ thuật và xây dựng quan hệ sản xuất phù hợp." },
+          { id: "political", label: "Chính trị – xã hội", description: "Giành và tổ chức quyền lực của nhân dân lao động, xây dựng nhà nước và nền dân chủ kiểu mới." },
+          { id: "culture", label: "Văn hóa, tư tưởng", description: "Cải tạo những yếu tố lỗi thời, xây dựng hệ giá trị, ý thức, văn hóa và con người mới." },
+        ],
+        edges: [
+          { id: "mission-economic", from: "mission", to: "economic", label: "phương diện" },
+          { id: "mission-political", from: "mission", to: "political", label: "phương diện" },
+          { id: "mission-culture", from: "mission", to: "culture", label: "phương diện" },
+        ],
+        sourceRefs: [refs.missionDomains],
+      },
+      {
+        id: "section-ch02-l01-objective-conditions",
+        order: 6,
+        type: "principles",
+        title: "Điều kiện khách quan",
+        status: "verified",
+        items: [
+          { id: "economic-position", label: "01", title: "Địa vị kinh tế", content: "Giai cấp công nhân là sản phẩm và chủ thể của đại công nghiệp, đại diện cho lực lượng sản xuất hiện đại và phương thức sản xuất tiên tiến." },
+          { id: "political-position", label: "02", title: "Địa vị chính trị – xã hội", content: "Lợi ích cơ bản của giai cấp công nhân đối lập với giai cấp tư sản và thống nhất với lợi ích của đa số nhân dân lao động; điều kiện sản xuất cũng hình thành tính tổ chức, kỷ luật và đoàn kết." },
+        ],
+        sourceRefs: [refs.objectiveConditions],
+      },
+      {
+        id: "section-ch02-l01-subjective-conditions",
+        order: 7,
+        type: "principles",
+        title: "Điều kiện chủ quan",
+        status: "verified",
+        items: [
+          { id: "class-development", title: "Phát triển giai cấp công nhân về số lượng và chất lượng", content: "Sự lớn mạnh phải đi cùng giác ngộ chính trị, trình độ làm chủ khoa học – kỹ thuật và công nghệ hiện đại." },
+          { id: "communist-party", title: "Vai trò của Đảng Cộng sản", content: "Đảng là đội tiên phong và nhân tố chủ quan quan trọng nhất để tổ chức, lãnh đạo giai cấp công nhân thực hiện sứ mệnh lịch sử." },
+          { id: "class-alliance", title: "Liên minh với nông dân và các tầng lớp lao động", content: "Liên minh giai cấp dưới sự lãnh đạo của giai cấp công nhân là điều kiện quan trọng của tiến trình cách mạng." },
+        ],
+        sourceRefs: [refs.subjectiveConditions],
+      },
+    ],
+  },
+  "ch02-lesson-02": {
+    summary: "Đối chiếu những đặc điểm ổn định, những biến đổi của giai cấp công nhân và việc thực hiện sứ mệnh lịch sử trong thế giới hiện nay.",
+    status: "verified",
+    sourceRefs: getLessonTextbookSourceRefs("ch02-lesson-02"),
+    sections: [
+      {
+        id: "section-ch02-l02-contemporary-comparison",
+        order: 1,
+        type: "comparison",
+        title: "Giai cấp công nhân hiện nay: ổn định và biến đổi",
+        status: "verified",
+        left: { title: "Những điểm tương đối ổn định" },
+        right: { title: "Những biến đổi và khác biệt" },
+        rows: [
+          { id: "production-role", criterion: "Vai trò trong sản xuất", left: "Tiếp tục là lực lượng sản xuất hàng đầu và chủ thể của sản xuất công nghiệp có tính xã hội hóa cao.", right: "Cơ cấu nghề nghiệp, thu nhập và vị trí trong nền sản xuất thay đổi mạnh cùng công nghệ và toàn cầu hóa." },
+          { id: "labor-capital", criterion: "Quan hệ lao động – tư bản", left: "Xung đột lợi ích cơ bản và sự chiếm đoạt giá trị thặng dư vẫn tồn tại trong xã hội tư bản.", right: "Một bộ phận công nhân tham gia sở hữu cổ phần và có mức sống trung lưu hơn nhưng quyền quyết định sản xuất vẫn chủ yếu thuộc các chủ sở hữu lớn." },
+          { id: "knowledge", criterion: "Trình độ lao động", left: "Phương thức lao động công nghiệp tiếp tục là cơ sở hình thành và phát triển giai cấp công nhân.", right: "Xu hướng trí tuệ hóa tăng nhanh; tri thức, kỹ năng nghề nghiệp và đào tạo lại ngày càng trở thành yêu cầu trực tiếp." },
+        ],
+        sourceRefs: [refs.stableCharacteristics, refs.contemporaryChanges],
+      },
+      {
+        id: "section-ch02-l02-current-mission-diagram",
+        order: 2,
+        type: "diagram",
+        title: "Thực hiện sứ mệnh lịch sử trên thế giới hiện nay",
+        status: "verified",
+        nodes: [
+          { id: "current-mission", label: "Sứ mệnh trong bối cảnh hiện nay" },
+          { id: "current-economic", label: "Kinh tế", description: "Tham gia sản xuất hiện đại, thúc đẩy tiền đề vật chất và đấu tranh trước bất công trong phân phối lợi ích." },
+          { id: "current-political", label: "Chính trị – xã hội", description: "Đấu tranh chống bất công, bất bình đẳng; tại các nước xã hội chủ nghĩa, lãnh đạo thực hiện nhiệm vụ của thời kỳ quá độ." },
+          { id: "current-culture", label: "Văn hóa, tư tưởng", description: "Bảo vệ nền tảng tư tưởng, củng cố niềm tin khoa học và theo đuổi các giá trị lao động, sáng tạo, công bằng, dân chủ, bình đẳng, tự do." },
+        ],
+        edges: [
+          { id: "current-economic-edge", from: "current-mission", to: "current-economic", label: "phương diện" },
+          { id: "current-political-edge", from: "current-mission", to: "current-political", label: "phương diện" },
+          { id: "current-culture-edge", from: "current-mission", to: "current-culture", label: "phương diện" },
+        ],
+        sourceRefs: [refs.currentMissionDomains],
+      },
+    ],
+  },
+  "ch02-lesson-03": {
+    summary: "Tìm hiểu đặc điểm, nội dung sứ mệnh lịch sử, phương hướng và giải pháp xây dựng giai cấp công nhân Việt Nam hiện nay.",
+    status: "verified",
+    sourceRefs: [...getLessonTextbookSourceRefs("ch02-lesson-03"), reviewRef],
+    sections: [
+      {
+        id: "section-ch02-l03-vietnam-context",
+        order: 1,
+        type: "text",
+        title: "Cơ sở hình thành những đặc điểm của giai cấp công nhân Việt Nam",
+        status: "verified",
+        paragraphs: [
+          "Giai cấp công nhân Việt Nam hình thành trong điều kiện một nước thuộc địa, gắn với quá trình khai thác thuộc địa và cuộc đấu tranh giải phóng dân tộc. Quá trình trưởng thành chính trị của giai cấp công nhân gắn với phong trào cách mạng và sự lãnh đạo của Đảng Cộng sản Việt Nam.",
+          "Nguồn gốc xã hội chủ yếu từ nông dân và các tầng lớp lao động tạo nên mối liên hệ tự nhiên giữa công nhân với nông dân, trí thức và các lực lượng trong khối đại đoàn kết toàn dân tộc.",
+        ],
+        sourceRefs: [refs.vietnamWorkerCharacteristics],
+      },
+      {
+        id: "section-ch02-l03-vietnam-characteristics",
+        order: 2,
+        type: "principles",
+        title: "Đặc điểm chủ yếu và những biến đổi hiện nay",
+        status: "verified",
+        items: [
+          { id: "historical-origin", title: "Ra đời sớm trong xã hội thuộc địa, nửa phong kiến", content: "Giai cấp công nhân trực tiếp đối kháng với thực dân và lực lượng thống trị, sớm được tôi luyện trong đấu tranh cách mạng." },
+          { id: "national-connection", title: "Gắn bó với dân tộc và nhân dân", content: "Lợi ích giai cấp gắn với lợi ích dân tộc; truyền thống yêu nước và đoàn kết trở thành nền tảng quan trọng của vai trò chính trị." },
+          { id: "worker-farmer-intellectual", title: "Có quan hệ mật thiết với nông dân và trí thức", content: "Nguồn gốc xã hội và lợi ích chung tạo thuận lợi cho việc xây dựng liên minh công nhân – nông dân – trí thức." },
+          { id: "current-transformation", title: "Biến đổi trong quá trình đổi mới và công nghiệp hóa", content: "Số lượng, chất lượng và cơ cấu nghề nghiệp phát triển; công nhân tri thức và công nhân trẻ được đào tạo ngày càng giữ vai trò chủ đạo." },
+        ],
+        sourceRefs: [refs.vietnamWorkerCharacteristics],
+      },
+      {
+        id: "section-ch02-l03-vietnam-mission-diagram",
+        order: 3,
+        type: "diagram",
+        title: "Ba nội dung sứ mệnh lịch sử ở Việt Nam hiện nay",
+        status: "verified",
+        nodes: [
+          { id: "vietnam-mission", label: "Sứ mệnh lịch sử ở Việt Nam" },
+          { id: "vietnam-economic", label: "Kinh tế", description: "Đi đầu trong công nghiệp hóa, hiện đại hóa, phát triển lực lượng sản xuất và nâng cao năng suất trên nền tảng khoa học – công nghệ." },
+          { id: "vietnam-political", label: "Chính trị – xã hội", description: "Góp phần giữ vững bản chất giai cấp công nhân của Đảng, tham gia xây dựng Đảng và bảo vệ quyền làm chủ của nhân dân." },
+          { id: "vietnam-culture", label: "Văn hóa, tư tưởng", description: "Xây dựng văn hóa và con người mới, rèn luyện tác phong công nghiệp, bảo vệ nền tảng tư tưởng và củng cố đoàn kết dân tộc, quốc tế." },
+        ],
+        edges: [
+          { id: "vietnam-economic-edge", from: "vietnam-mission", to: "vietnam-economic", label: "phương diện" },
+          { id: "vietnam-political-edge", from: "vietnam-mission", to: "vietnam-political", label: "phương diện" },
+          { id: "vietnam-culture-edge", from: "vietnam-mission", to: "vietnam-culture", label: "phương diện" },
+        ],
+        sourceRefs: [refs.vietnamMissionDomains],
+      },
+      {
+        id: "section-ch02-l03-development-direction",
+        order: 4,
+        type: "principles",
+        title: "Phương hướng xây dựng giai cấp công nhân Việt Nam",
+        status: "verified",
+        items: [
+          { id: "quantity-quality-organization", title: "Phát triển về số lượng, chất lượng và tổ chức", content: "Xây dựng giai cấp công nhân hiện đại, lớn mạnh, có cơ cấu đáp ứng yêu cầu phát triển đất nước." },
+          { id: "political-professional", title: "Nâng cao bản lĩnh và năng lực nghề nghiệp", content: "Tăng cường giác ngộ chính trị, trình độ học vấn, chuyên môn, kỹ năng nghề nghiệp, tác phong công nghiệp và kỷ luật lao động." },
+          { id: "welfare-rights", title: "Chăm lo đời sống và bảo vệ quyền lợi", content: "Quan tâm việc làm, tiền lương, bảo hiểm, nhà ở, phúc lợi xã hội cùng quyền và lợi ích hợp pháp, chính đáng của công nhân." },
+          { id: "worker-organization", title: "Đổi mới tổ chức đại diện", content: "Phát triển và đổi mới hoạt động công đoàn phù hợp với cơ cấu lao động, nhu cầu công nhân và yêu cầu hội nhập quốc tế." },
+        ],
+        sourceRefs: [refs.developmentDirection],
+      },
+      {
+        id: "section-ch02-l03-primary-solutions",
+        order: 5,
+        type: "principles",
+        title: "Một số giải pháp chủ yếu",
+        status: "verified",
+        items: [
+          { id: "solution-awareness", label: "Một", title: "Nâng cao nhận thức về vai trò lãnh đạo", content: "Kiên định quan điểm giai cấp công nhân lãnh đạo cách mạng thông qua đội tiên phong là Đảng Cộng sản Việt Nam." },
+          { id: "solution-alliance", label: "Hai", title: "Gắn xây dựng giai cấp với liên minh xã hội", content: "Phát huy liên minh công nhân với nông dân, trí thức, doanh nhân và vai trò trong khối đại đoàn kết toàn dân tộc." },
+          { id: "solution-strategy", label: "Ba", title: "Gắn với chiến lược phát triển đất nước", content: "Kết hợp xây dựng giai cấp công nhân với phát triển kinh tế – xã hội, công nghiệp hóa, hiện đại hóa, hội nhập và tiến bộ, công bằng xã hội." },
+          { id: "solution-training", label: "Bốn", title: "Đào tạo và trí thức hóa", content: "Nâng cao trình độ toàn diện, chú trọng thế hệ công nhân trẻ có học vấn, chuyên môn, kỹ năng và bản lĩnh chính trị." },
+          { id: "solution-system", label: "Năm", title: "Phát huy trách nhiệm của toàn hệ thống", content: "Kết hợp vai trò lãnh đạo của Đảng, quản lý của Nhà nước, hoạt động công đoàn, trách nhiệm xã hội và nỗ lực của mỗi công nhân." },
+        ],
+        sourceRefs: [refs.primarySolutions],
+      },
+      {
+        id: "section-ch02-review-questions",
+        order: 6,
+        type: "review-question",
+        title: "Câu hỏi ôn tập Chương 2",
+        status: "verified",
+        sourceRefs: [reviewRef],
+        questions: [
+          { id: "review-question-ch02-01", order: 1, question: "Nêu những quan điểm cơ bản của chủ nghĩa Mác – Lênin về giai cấp công nhân và nội dung sứ mệnh lịch sử của giai cấp công nhân.", sourceRefs: [reviewRef] },
+          { id: "review-question-ch02-02", order: 2, question: "Trình bày những điều kiện khách quan và nhân tố chủ quan quy định sứ mệnh lịch sử của giai cấp công nhân.", sourceRefs: [reviewRef] },
+          { id: "review-question-ch02-03", order: 3, question: "Phân tích nội dung sứ mệnh lịch sử của giai cấp công nhân trên thế giới hiện nay.", sourceRefs: [reviewRef] },
+          { id: "review-question-ch02-04", order: 4, question: "Phân tích đặc điểm của giai cấp công nhân Việt Nam và nội dung sứ mệnh lịch sử của giai cấp công nhân Việt Nam hiện nay.", sourceRefs: [reviewRef] },
+          { id: "review-question-ch02-05", order: 5, question: "Phương hướng và giải pháp chủ yếu để xây dựng giai cấp công nhân Việt Nam hiện nay theo quan điểm của Đảng Cộng sản Việt Nam?", sourceRefs: [reviewRef] },
+        ],
+      },
+    ],
+  },
+} as const satisfies Record<ChapterTwoLessonId, LessonAcademicContent>;

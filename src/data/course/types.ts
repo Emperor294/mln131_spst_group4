@@ -65,6 +65,7 @@ export type LearningSectionType = (typeof LEARNING_SECTION_TYPES)[number];
 
 interface LearningSectionBase {
   id: LearningSectionId;
+  order: number;
   type: LearningSectionType;
   title?: string;
   status: ContentStatus;
@@ -238,6 +239,26 @@ export interface ChapterTextbookPageMapping {
   chapterId: ChapterId;
   sourceRef: ScopedSourceReference;
   status: "verified";
+}
+
+export interface LessonTextbookPageMapping {
+  lessonId: LessonId;
+  chapterId: ChapterId;
+  sourceRef: ScopedSourceReference;
+  status: "verified";
+}
+
+export interface ChapterReviewPageMapping {
+  chapterId: ChapterId;
+  sourceRefs: readonly ScopedSourceReference[];
+  status: "verified";
+}
+
+export interface LessonAcademicContent {
+  summary: string;
+  status: "verified" | "draft";
+  sections: readonly LearningSection[];
+  sourceRefs: readonly ScopedSourceReference[];
 }
 
 export interface MuseumConcept {

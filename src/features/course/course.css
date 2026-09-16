@@ -98,6 +98,47 @@
 .learning-block--media audio { width: 100%; }
 .learning-block--media figcaption { color: var(--course-muted); font: 400 .72rem/1.6 var(--font-be-vietnam-pro); margin-top: 12px; }
 
+.principles-list,.academic-timeline,.academic-diagram__nodes,.academic-diagram figcaption ul,.review-question-list { list-style: none; }
+.principles-list { border-top: 1px solid var(--course-line); margin-top: 30px; }
+.principles-list li { border-bottom: 1px solid var(--course-line); display: grid; gap: 24px; grid-template-columns: minmax(150px,.7fr) minmax(0,1.3fr); padding: 26px 0; }
+.principles-list__heading { display: flex; flex-direction: column; gap: 9px; }
+.principles-list__heading span { color: var(--course-red); font: 600 .58rem/1 var(--font-be-vietnam-pro); letter-spacing: .12em; text-transform: uppercase; }
+.principles-list__heading strong { font: 500 1.08rem/1.4 var(--font-noto-serif-display); }
+.principles-list li > p,.academic-timeline p,.academic-diagram p { color: var(--course-muted); font: 400 .86rem/1.75 var(--font-be-vietnam-pro); }
+
+.comparison { border: 1px solid var(--course-line); margin-top: 30px; }
+.comparison__header,.comparison__row { display: grid; grid-template-columns: minmax(120px,.6fr) repeat(2,minmax(0,1fr)); }
+.comparison__header { background: rgba(186,162,109,.06); }
+.comparison__header > *,.comparison__row > * { border-right: 1px solid var(--course-line); padding: 20px; }
+.comparison__header > *:last-child,.comparison__row > *:last-child { border-right: 0; }
+.comparison__header span { color: var(--course-gold); font: 600 .58rem/1.4 var(--font-be-vietnam-pro); letter-spacing: .1em; text-transform: uppercase; }
+.comparison__header strong,.comparison__row > strong { font: 500 .95rem/1.45 var(--font-noto-serif-display); }
+.comparison__row { border-top: 1px solid var(--course-line); }
+.comparison__row > div { color: var(--course-muted); font: 400 .82rem/1.7 var(--font-be-vietnam-pro); }
+
+.academic-timeline { border-left: 1px solid var(--course-line); margin: 34px 0 0 10px; }
+.academic-timeline li { display: grid; gap: 30px; grid-template-columns: 140px 1fr; padding: 0 0 38px 34px; position: relative; }
+.academic-timeline li::before { background: var(--course-red); border: 4px solid var(--course-bg); border-radius: 50%; content: ""; height: 11px; left: -6px; position: absolute; top: 4px; width: 11px; }
+.academic-timeline li > span { color: var(--course-gold); font: 600 .64rem/1.5 var(--font-be-vietnam-pro); letter-spacing: .08em; text-transform: uppercase; }
+.academic-timeline strong { display: block; font: 500 1.12rem/1.35 var(--font-noto-serif-display); margin-bottom: 9px; }
+
+.academic-diagram { background: #0d1116; border: 1px solid var(--course-line); margin-top: 30px; padding: clamp(24px,4vw,42px); }
+.academic-diagram__nodes { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); }
+.academic-diagram__nodes li { border: 1px solid var(--course-line); min-height: 140px; padding: 22px; }
+.academic-diagram__nodes li > span { color: var(--course-red); display: block; font: 600 .58rem/1 var(--font-be-vietnam-pro); letter-spacing: .12em; margin-bottom: 22px; }
+.academic-diagram__nodes strong { display: block; font: 500 1.1rem/1.3 var(--font-noto-serif-display); }
+.academic-diagram__nodes p { margin-top: 10px; }
+.academic-diagram figcaption { border-top: 1px solid var(--course-line); color: var(--course-muted); display: grid; gap: 24px; grid-template-columns: 130px 1fr; margin-top: 28px; padding-top: 24px; }
+.academic-diagram figcaption > span { color: var(--course-gold); font: 600 .58rem/1.5 var(--font-be-vietnam-pro); letter-spacing: .1em; text-transform: uppercase; }
+.academic-diagram figcaption li { font: 400 .76rem/1.7 var(--font-be-vietnam-pro); margin-bottom: 7px; }
+
+.learning-block--review { border: 1px solid var(--course-line); padding: clamp(24px,4vw,44px); }
+.learning-block--review > .course-eyebrow { margin-bottom: 14px; }
+.review-question-list { border-top: 1px solid var(--course-line); }
+.review-question-list > li { border-bottom: 1px solid var(--course-line); display: grid; gap: 22px; grid-template-columns: 44px 1fr; padding: 26px 0; }
+.review-question-list > li > span { color: var(--course-red); font: 500 1.1rem/1.4 var(--font-noto-serif-display); }
+.review-question-list > li > div > p { color: #cbc6bc; font: 500 1rem/1.75 var(--font-be-vietnam-pro); }
+
 .source-list ol { border-top: 1px solid var(--course-line); list-style: none; margin-top: 42px; }
 .source-list--compact { border-bottom: 0; border-top: 1px solid var(--course-line); margin-top: 34px; padding: 28px 0 0; }
 .source-list--compact > h3,.source-list--compact > h4 { font: 500 1.35rem/1.25 var(--font-noto-serif-display); margin-top: 8px; }
@@ -107,6 +148,7 @@
 .source-list li strong { font: 600 .95rem/1.5 var(--font-be-vietnam-pro); }
 .source-list li p { color: var(--course-muted); font: 400 .78rem/1.7 var(--font-be-vietnam-pro); margin-top: 6px; }
 .source-list__notes { font-style: italic; }
+.source-list__pages { color: var(--course-gold) !important; font-weight: 600 !important; }
 .source-list li a { color: var(--course-gold); display: inline-block; font: 600 .62rem/1 var(--font-be-vietnam-pro); letter-spacing: .08em; margin-top: 14px; text-transform: uppercase; }
 .source-list li a:focus-visible { outline: 2px solid var(--course-gold); outline-offset: 4px; }
 .related-artifacts ul { display: grid; gap: 14px; grid-template-columns: repeat(2,minmax(0,1fr)); list-style: none; margin-top: 44px; }
@@ -176,6 +218,12 @@
   .chapter-lesson > header { grid-template-columns: 1fr; }
   .chapter-lesson__sections { margin-left: 0; }
   .source-list li { grid-template-columns: 1fr; }
+  .principles-list li,.academic-timeline li,.academic-diagram figcaption { grid-template-columns: 1fr; }
+  .comparison__header { display: none; }
+  .comparison__row { grid-template-columns: 1fr; }
+  .comparison__row > * { border-bottom: 1px solid var(--course-line); border-right: 0; }
+  .comparison__row > *:last-child { border-bottom: 0; }
+  .comparison__row > div::before { color: var(--course-gold); content: attr(data-column); display: block; font: 600 .55rem/1.4 var(--font-be-vietnam-pro); letter-spacing: .09em; margin-bottom: 9px; text-transform: uppercase; }
   .related-artifacts ul { grid-template-columns: 1fr; }
   .alliance-map__canvas { aspect-ratio: 1/1.2; min-height: 500px; }
   .alliance-map__node { min-width: 118px; padding: 15px 12px; }

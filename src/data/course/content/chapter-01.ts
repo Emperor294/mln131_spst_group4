@@ -1,0 +1,243 @@
+import { getChapterReviewSourceRefs, getLessonTextbookSourceRefs } from "../lesson-page-map";
+import type { LessonAcademicContent, LessonId } from "../types";
+import { textbookReference } from "./textbook-reference";
+
+type ChapterOneLessonId = Extract<LessonId, `ch01-${string}`>;
+
+const refs = {
+  concept: textbookReference("ref-ch01-l01-concept", 11, 12, 8, 9),
+  economicContext: textbookReference("ref-ch01-l01-economic-context", 13, 14, 10, 11),
+  naturalScience: textbookReference("ref-ch01-l01-natural-science", 14, 15, 11, 12),
+  theoreticalPremises: textbookReference("ref-ch01-l01-theoretical-premises", 15, 17, 12, 14),
+  marxEngelsRole: textbookReference("ref-ch01-l01-marx-engels-role", 17, 19, 14, 16),
+  discoveries: textbookReference("ref-ch01-l01-discoveries", 19, 20, 16, 17),
+  manifesto: textbookReference("ref-ch01-l01-manifesto", 20, 21, 17, 18),
+  marxEngelsTimeline: textbookReference("ref-ch01-l02-marx-engels", 22, 25, 19, 22),
+  leninBeforeOctober: textbookReference("ref-ch01-l02-lenin-before-october", 25, 28, 22, 25),
+  leninAfterOctober: textbookReference("ref-ch01-l02-lenin-after-october", 28, 31, 25, 28),
+  afterLenin: textbookReference("ref-ch01-l02-after-lenin", 31, 38, 28, 35),
+  researchObject: textbookReference("ref-ch01-l03-research-object", 39, 42, 36, 39),
+  methods: textbookReference("ref-ch01-l03-methods", 43, 45, 40, 42),
+  theoreticalMeaning: textbookReference("ref-ch01-l03-theoretical-meaning", 46, 47, 43, 44),
+  practicalMeaning: textbookReference("ref-ch01-l03-practical-meaning", 47, 48, 44, 45),
+} as const;
+
+const [reviewRef] = getChapterReviewSourceRefs("chapter-01");
+
+export const CHAPTER_01_LESSON_CONTENT = {
+  "ch01-lesson-01": {
+    summary: "Tìm hiểu hoàn cảnh lịch sử, các tiền đề và vai trò của C. Mác, Ph. Ăngghen đối với sự ra đời của Chủ nghĩa xã hội khoa học.",
+    status: "verified",
+    sourceRefs: getLessonTextbookSourceRefs("ch01-lesson-01"),
+    sections: [
+      {
+        id: "section-ch01-l01-concept",
+        order: 1,
+        type: "text",
+        title: "Chủ nghĩa xã hội khoa học trong cấu trúc chủ nghĩa Mác – Lênin",
+        status: "verified",
+        paragraphs: [
+          "Trong phạm vi môn học, Chủ nghĩa xã hội khoa học được nghiên cứu theo nghĩa hẹp: một trong ba bộ phận hợp thành chủ nghĩa Mác – Lênin, bên cạnh triết học và kinh tế chính trị học.",
+        ],
+        sourceRefs: [refs.concept],
+      },
+      {
+        id: "section-ch01-l01-economic-context",
+        order: 2,
+        type: "text",
+        title: "Điều kiện kinh tế – xã hội",
+        status: "verified",
+        paragraphs: [
+          "Sự phát triển của nền đại công nghiệp trong những năm 1840 thúc đẩy lực lượng sản xuất và phương thức sản xuất tư bản chủ nghĩa, đồng thời làm rõ mâu thuẫn giữa lực lượng sản xuất mang tính xã hội với quan hệ sản xuất dựa trên sở hữu tư nhân tư bản chủ nghĩa.",
+          "Cùng với sự hình thành của giai cấp tư sản và giai cấp công nhân, phong trào đấu tranh của công nhân phát triển từ yêu sách kinh tế đến mục tiêu chính trị. Thực tiễn đó đặt ra yêu cầu về một hệ thống lý luận và cương lĩnh chính trị có khả năng định hướng phong trào.",
+        ],
+        sourceRefs: [refs.economicContext],
+      },
+      {
+        id: "section-ch01-l01-context-key-idea",
+        order: 3,
+        type: "key-idea",
+        title: "Từ phong trào tự phát đến nhu cầu lý luận",
+        status: "verified",
+        content: "Sự lớn mạnh của phong trào công nhân vừa tạo cơ sở hiện thực, vừa đặt ra nhu cầu cấp thiết về một lý luận khoa học soi đường cho hoạt động cách mạng.",
+        sourceRefs: [refs.economicContext],
+      },
+      {
+        id: "section-ch01-l01-natural-science",
+        order: 4,
+        type: "principles",
+        title: "Tiền đề khoa học tự nhiên",
+        status: "verified",
+        intro: "Giáo trình xác định ba phát minh có ý nghĩa tạo tiền đề khoa học cho sự phát triển của thế giới quan và phương pháp luận mới:",
+        items: [
+          { id: "evolution", title: "Học thuyết tiến hóa", content: "Góp phần làm rõ sự phát triển của giới tự nhiên theo quá trình lịch sử." },
+          { id: "energy", title: "Định luật bảo toàn và chuyển hóa năng lượng", content: "Cho thấy các hình thức vận động có quan hệ chuyển hóa thay vì tồn tại biệt lập." },
+          { id: "cell", title: "Học thuyết tế bào", content: "Cung cấp cơ sở khoa học để nhận thức tính thống nhất trong cấu tạo và phát triển của cơ thể sống." },
+        ],
+        sourceRefs: [refs.naturalScience],
+      },
+      {
+        id: "section-ch01-l01-utopian-socialism",
+        order: 5,
+        type: "comparison",
+        title: "Chủ nghĩa xã hội không tưởng phê phán: giá trị và hạn chế",
+        status: "verified",
+        left: { title: "Giá trị" },
+        right: { title: "Hạn chế lịch sử" },
+        rows: [
+          { id: "social-critique", criterion: "Phê phán xã hội", left: "Lên án bất công của chế độ quân chủ chuyên chế và xã hội tư bản đương thời.", right: "Chưa phát hiện được quy luật vận động chung của xã hội và quy luật phát triển của chủ nghĩa tư bản." },
+          { id: "future-society", criterion: "Hình dung xã hội mới", left: "Đưa ra nhiều dự kiến về tổ chức sản xuất, phân phối, vai trò khoa học – kỹ thuật và giải phóng phụ nữ.", right: "Chưa chỉ ra được những biện pháp hiện thực để cải tạo xã hội cũ và xây dựng xã hội mới." },
+          { id: "revolutionary-force", criterion: "Lực lượng thực hiện", left: "Có tác dụng thức tỉnh công nhân và người lao động trong đấu tranh chống áp bức, bất công.", right: "Chưa nhận ra giai cấp công nhân là lực lượng xã hội có khả năng thực hiện sự chuyển biến cách mạng." },
+        ],
+        sourceRefs: [refs.theoreticalPremises],
+      },
+      {
+        id: "section-ch01-l01-marx-engels-role",
+        order: 6,
+        type: "key-idea",
+        title: "Vai trò của C. Mác và Ph. Ăngghen",
+        status: "verified",
+        content: "Các điều kiện kinh tế – xã hội cùng tiền đề khoa học và tư tưởng là điều kiện cần; hoạt động lý luận và thực tiễn của C. Mác, Ph. Ăngghen là điều kiện quyết định để hình thành một học thuyết khoa học và cách mạng. Quá trình này gắn với sự chuyển biến của hai ông từ lập trường duy tâm sang duy vật và từ dân chủ cách mạng sang cộng sản chủ nghĩa.",
+        sourceRefs: [refs.marxEngelsRole],
+      },
+      {
+        id: "section-ch01-l01-three-discoveries",
+        order: 7,
+        type: "principles",
+        title: "Ba phát kiến tạo nền tảng lý luận",
+        status: "verified",
+        items: [
+          { id: "historical-materialism", label: "01", title: "Chủ nghĩa duy vật lịch sử", content: "Đem lại cơ sở triết học để nhận thức sự vận động và thay thế của các hình thái xã hội." },
+          { id: "surplus-value", label: "02", title: "Học thuyết giá trị thặng dư", content: "Làm rõ cơ sở kinh tế của phương thức sản xuất tư bản chủ nghĩa và xu hướng thay thế nó." },
+          { id: "working-class-mission", label: "03", title: "Học thuyết về sứ mệnh lịch sử toàn thế giới của giai cấp công nhân", content: "Xác định lực lượng xã hội có khả năng thực hiện sự chuyển biến cách mạng lên xã hội mới." },
+        ],
+        sourceRefs: [refs.discoveries],
+      },
+      {
+        id: "section-ch01-l01-manifesto",
+        order: 8,
+        type: "text",
+        title: "Tuyên ngôn của Đảng Cộng sản và sự hình thành lý luận",
+        status: "verified",
+        paragraphs: [
+          "Giáo trình xem sự ra đời của Tuyên ngôn của Đảng Cộng sản năm 1848 là dấu mốc hình thành cơ bản lý luận của chủ nghĩa Mác với ba bộ phận: triết học, kinh tế chính trị học và Chủ nghĩa xã hội khoa học.",
+          "Tác phẩm hệ thống hóa những luận điểm nền tảng về đấu tranh giai cấp, vai trò của chính đảng của giai cấp công nhân, xu hướng thay thế chủ nghĩa tư bản và nhiệm vụ liên minh với các lực lượng dân chủ trong đấu tranh cách mạng.",
+        ],
+        sourceRefs: [refs.manifesto],
+      },
+    ],
+  },
+  "ch01-lesson-02": {
+    summary: "Theo dõi các chặng phát triển cơ bản của Chủ nghĩa xã hội khoa học từ năm 1848 đến hiện nay theo cấu trúc của giáo trình.",
+    status: "verified",
+    sourceRefs: getLessonTextbookSourceRefs("ch01-lesson-02"),
+    sections: [
+      {
+        id: "section-ch01-l02-marx-engels-timeline",
+        order: 1,
+        type: "timeline",
+        title: "C. Mác và Ph. Ăngghen phát triển Chủ nghĩa xã hội khoa học",
+        status: "verified",
+        items: [
+          { id: "1848-1871", period: "1848 → 1871", title: "Từ Tuyên ngôn đến Công xã Pari", description: "Qua tổng kết cách mạng châu Âu, sự ra đời của Quốc tế I và bộ Tư bản, lý luận được phát triển về nhà nước, cách mạng không ngừng và liên minh công nhân – nông dân." },
+          { id: "1871-1895", period: "Sau 1871 → 1895", title: "Tổng kết Công xã Pari và tiếp tục phát triển học thuyết", description: "Kinh nghiệm Công xã Pari được dùng để bổ sung nhận thức về nhà nước của giai cấp công nhân; đồng thời lý luận được xác định là hệ thống cần tiếp tục phát triển theo điều kiện lịch sử mới, không phải giáo điều bất biến." },
+        ],
+        sourceRefs: [refs.marxEngelsTimeline],
+      },
+      {
+        id: "section-ch01-l02-lenin-timeline",
+        order: 2,
+        type: "timeline",
+        title: "V.I. Lênin vận dụng và phát triển trong điều kiện mới",
+        status: "verified",
+        items: [
+          { id: "before-october", period: "Trước Cách mạng Tháng Mười Nga", title: "Bảo vệ và phát triển các nguyên lý cơ bản", description: "V.I. Lênin đấu tranh chống các trào lưu phi mácxít, phát triển lý luận về đảng cách mạng kiểu mới, cách mạng xã hội chủ nghĩa, vấn đề dân tộc, liên minh giai cấp và khả năng thắng lợi của cách mạng ở khâu yếu của hệ thống tư bản chủ nghĩa." },
+          { id: "after-october-1924", period: "1917 → 1924", title: "Từ cách mạng đến xây dựng xã hội mới", description: "Lý luận được phát triển trên các vấn đề nhà nước và chuyên chính vô sản, dân chủ, thời kỳ quá độ, cải cách bộ máy, chính sách kinh tế, công nghiệp hóa, hợp tác xã và quan hệ dân tộc." },
+        ],
+        sourceRefs: [refs.leninBeforeOctober, refs.leninAfterOctober],
+      },
+      {
+        id: "section-ch01-l02-after-lenin-timeline",
+        order: 3,
+        type: "timeline",
+        title: "Sự vận dụng và phát triển sau V.I. Lênin",
+        status: "verified",
+        items: [
+          { id: "1924-1991", period: "Sau 1924 → trước 1991", title: "Mở rộng thực tiễn xây dựng chủ nghĩa xã hội", description: "Sự hình thành hệ thống xã hội chủ nghĩa và hoạt động của phong trào cộng sản quốc tế tạo thêm thực tiễn để tổng kết, bổ sung lý luận, đồng thời cũng làm xuất hiện những bất đồng cần được nhận thức trong bối cảnh lịch sử cụ thể." },
+          { id: "1991-present", period: "1991 → nay", title: "Điều chỉnh và phát triển trong bối cảnh mới", description: "Sau biến động ở Liên Xô và Đông Âu, các đảng cộng sản tại những quốc gia tiếp tục định hướng xã hội chủ nghĩa từng bước bổ sung lý luận phù hợp với điều kiện mới; giáo trình trình bày công cuộc cải cách ở Trung Quốc và đổi mới ở Việt Nam như những quá trình vận dụng cụ thể." },
+        ],
+        sourceRefs: [refs.afterLenin],
+      },
+    ],
+  },
+  "ch01-lesson-03": {
+    summary: "Xác định đối tượng, hệ phương pháp và ý nghĩa lý luận – thực tiễn của việc nghiên cứu Chủ nghĩa xã hội khoa học.",
+    status: "verified",
+    sourceRefs: [...getLessonTextbookSourceRefs("ch01-lesson-03"), reviewRef],
+    sections: [
+      {
+        id: "section-ch01-l03-research-object-definition",
+        order: 1,
+        type: "definition",
+        title: "Đối tượng nghiên cứu",
+        term: "Đối tượng nghiên cứu của Chủ nghĩa xã hội khoa học",
+        definition: "Những quy luật và tính quy luật chính trị – xã hội của quá trình hình thành, phát triển hình thái kinh tế – xã hội cộng sản chủ nghĩa; cùng các nguyên tắc, điều kiện, con đường, hình thức và phương pháp đấu tranh để hiện thực hóa sự chuyển biến từ chủ nghĩa tư bản lên chủ nghĩa xã hội và chủ nghĩa cộng sản.",
+        status: "verified",
+        sourceRefs: [refs.researchObject],
+      },
+      {
+        id: "section-ch01-l03-disciplinary-distinction",
+        order: 2,
+        type: "text",
+        title: "Phân biệt bình diện nghiên cứu",
+        status: "verified",
+        paragraphs: [
+          "Triết học và kinh tế chính trị học mácxít luận giải cơ sở triết học, kinh tế và tính tất yếu của sự thay thế chủ nghĩa tư bản. Chủ nghĩa xã hội khoa học tập trung trực tiếp vào bình diện chính trị – xã hội: lực lượng, con đường, hình thức và biện pháp thực hiện sự chuyển biến đó.",
+        ],
+        sourceRefs: [refs.researchObject],
+      },
+      {
+        id: "section-ch01-l03-methods",
+        order: 3,
+        type: "principles",
+        title: "Phương pháp nghiên cứu",
+        status: "verified",
+        intro: "Trên nền tảng phương pháp luận của chủ nghĩa duy vật biện chứng và chủ nghĩa duy vật lịch sử, giáo trình nhấn mạnh các phương pháp cụ thể sau:",
+        items: [
+          { id: "history-logic", title: "Kết hợp lịch sử và lôgíc", content: "Xuất phát từ sự kiện và tư liệu lịch sử để khái quát cấu trúc, quan hệ và tính quy luật, không dừng ở việc liệt kê sự kiện." },
+          { id: "political-social-analysis", title: "Khảo sát và phân tích chính trị – xã hội", content: "Đặt hoạt động và quan hệ xã hội trong những điều kiện kinh tế – xã hội cụ thể, chú ý tới lập trường và tác động chính trị." },
+          { id: "comparison", title: "So sánh", content: "Làm rõ điểm tương đồng và khác biệt giữa các phương thức sản xuất, thể chế, chế độ dân chủ, lý thuyết và mô hình xã hội." },
+          { id: "interdisciplinary", title: "Các phương pháp liên ngành", content: "Vận dụng phân tích, tổng hợp, thống kê, điều tra xã hội học, sơ đồ hóa và mô hình hóa để nghiên cứu các khía cạnh chính trị – xã hội." },
+          { id: "practice-review", title: "Tổng kết thực tiễn", content: "Khái quát các vấn đề lý luận và tính quy luật từ thực tiễn xây dựng chủ nghĩa xã hội ở từng quốc gia và trong hệ thống xã hội chủ nghĩa." },
+        ],
+        sourceRefs: [refs.methods],
+      },
+      {
+        id: "section-ch01-l03-research-meaning",
+        order: 4,
+        type: "principles",
+        title: "Ý nghĩa của việc nghiên cứu",
+        status: "verified",
+        items: [
+          { id: "theoretical", label: "Lý luận", title: "Hình thành nhận thức và phương pháp luận", content: "Trang bị nhận thức chính trị – xã hội và phương pháp luận khoa học về quá trình hình thành, phát triển xã hội mới; tạo cơ sở để vận dụng và phát triển lý luận phù hợp với điều kiện Việt Nam." },
+          { id: "practical", label: "Thực tiễn", title: "Định hướng hoạt động và củng cố niềm tin khoa học", content: "Hỗ trợ phân tích thực tiễn, nhận diện nguyên nhân của thành công hoặc khủng hoảng, đồng thời gắn nhận thức khoa học với hoạt động tự giác, chủ động và sáng tạo." },
+        ],
+        sourceRefs: [refs.theoreticalMeaning, refs.practicalMeaning],
+      },
+      {
+        id: "section-ch01-review-questions",
+        order: 5,
+        type: "review-question",
+        title: "Câu hỏi ôn tập Chương 1",
+        status: "verified",
+        sourceRefs: [reviewRef],
+        questions: [
+          { id: "review-question-ch01-01", order: 1, question: "Phân tích điều kiện kinh tế – xã hội và vai trò của C. Mác, Ph. Ăngghen trong việc hình thành Chủ nghĩa xã hội khoa học.", sourceRefs: [reviewRef] },
+          { id: "review-question-ch01-02", order: 2, question: "Phân tích vai trò của V.I. Lênin trong việc vận dụng và phát triển Chủ nghĩa xã hội khoa học.", sourceRefs: [reviewRef] },
+          { id: "review-question-ch01-03", order: 3, question: "Phân tích đối tượng nghiên cứu của chủ nghĩa xã hội khoa học? So sánh với đối tượng nghiên cứu của triết học?", sourceRefs: [reviewRef] },
+          { id: "review-question-ch01-04", order: 4, question: "Phân tích những đóng góp về lý luận chính trị - xã hội của Đảng Cộng sản Việt Nam qua 35 năm đổi mới?", sourceRefs: [reviewRef] },
+        ],
+      },
+    ],
+  },
+} as const satisfies Record<ChapterOneLessonId, LessonAcademicContent>;

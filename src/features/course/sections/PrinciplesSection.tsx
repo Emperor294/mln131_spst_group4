@@ -3,7 +3,7 @@ import SourceList from "../components/SourceList";
 
 export default function PrinciplesSection({ section }: { section: PrinciplesLearningSection }) {
   return (
-    <section className="learning-block learning-block--principles" aria-labelledby={`${section.id}-title`}>
+    <section className="learning-block learning-block--principles" aria-labelledby={section.title ? `${section.id}-title` : undefined}>
       {section.title && <h3 id={`${section.id}-title`}>{section.title}</h3>}
       {section.intro && <p>{section.intro}</p>}
       <ol className="principles-list">
