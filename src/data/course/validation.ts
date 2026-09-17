@@ -199,8 +199,8 @@ export function getCourseDataIntegrityIssues(): string[] {
     }
   }
 
-  if (LESSON_TEXTBOOK_PAGE_MAP.length !== 6) {
-    issues.push("LESSON_TEXTBOOK_PAGE_MAP phải có đúng 6 mapping bài học đã được rà soát.");
+  if (LESSON_TEXTBOOK_PAGE_MAP.length !== 12) {
+    issues.push("LESSON_TEXTBOOK_PAGE_MAP phải có đúng 12 mapping bài học đã được rà soát.");
   }
   const mappedLessons = new Set<LessonId>();
   for (const mapping of LESSON_TEXTBOOK_PAGE_MAP) {
@@ -285,7 +285,7 @@ export function getCourseDataIntegrityIssues(): string[] {
         if (sectionOrders.has(section.order)) issues.push(`Lesson ${lesson.id} có section order bị trùng: ${section.order}`);
         sectionOrders.add(section.order);
         validateSection(section, sourceIds, issues, `Lesson ${lesson.id}`, lesson.id, chapter.id, sectionIds, reviewQuestionIds);
-        if (section.status === "verified" && !["chapter-01", "chapter-02"].includes(chapter.id)) {
+        if (section.status === "verified" && !["chapter-01", "chapter-02", "chapter-03", "chapter-04"].includes(chapter.id)) {
           issues.push(`Section ${section.id} của ${chapter.id} không được verified trước khi migrate nội dung.`);
         }
       }

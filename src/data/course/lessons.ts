@@ -1,5 +1,7 @@
 import { CHAPTER_01_LESSON_CONTENT } from "./content/chapter-01";
 import { CHAPTER_02_LESSON_CONTENT } from "./content/chapter-02";
+import { CHAPTER_03_LESSON_CONTENT } from "./content/chapter-03";
+import { CHAPTER_04_LESSON_CONTENT } from "./content/chapter-04";
 import type { ChapterId, Lesson, LessonAcademicContent, LessonId } from "./types";
 
 const PLACEHOLDER_SUMMARY = "Nội dung bài học đang được biên soạn từ giáo trình.";
@@ -7,6 +9,8 @@ const PLACEHOLDER_SUMMARY = "Nội dung bài học đang được biên soạn t
 const VERIFIED_LESSON_CONTENT = {
   ...CHAPTER_01_LESSON_CONTENT,
   ...CHAPTER_02_LESSON_CONTENT,
+  ...CHAPTER_03_LESSON_CONTENT,
+  ...CHAPTER_04_LESSON_CONTENT,
 } satisfies Partial<Record<LessonId, LessonAcademicContent>>;
 
 interface LessonStructure {

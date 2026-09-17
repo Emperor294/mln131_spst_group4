@@ -14,6 +14,12 @@ export const LESSON_TEXTBOOK_PAGE_MAP: readonly LessonTextbookPageMapping[] = [
   { lessonId: "ch02-lesson-01", chapterId: "chapter-02", sourceRef: { id: "ref-ch02-l01-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 52, end: 64 }, pdfPages: { start: 49, end: 61 } }, status: "verified" },
   { lessonId: "ch02-lesson-02", chapterId: "chapter-02", sourceRef: { id: "ref-ch02-l02-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 65, end: 71 }, pdfPages: { start: 62, end: 68 } }, status: "verified" },
   { lessonId: "ch02-lesson-03", chapterId: "chapter-02", sourceRef: { id: "ref-ch02-l03-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 72, end: 83 }, pdfPages: { start: 69, end: 80 } }, status: "verified" },
+  { lessonId: "ch03-lesson-01", chapterId: "chapter-03", sourceRef: { id: "ref-ch03-l01-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 86, end: 103 }, pdfPages: { start: 83, end: 100 } }, status: "verified" },
+  { lessonId: "ch03-lesson-02", chapterId: "chapter-03", sourceRef: { id: "ref-ch03-l02-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 104, end: 108 }, pdfPages: { start: 101, end: 105 } }, status: "verified" },
+  { lessonId: "ch03-lesson-03", chapterId: "chapter-03", sourceRef: { id: "ref-ch03-l03-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 109, end: 123 }, pdfPages: { start: 106, end: 120 } }, status: "verified" },
+  { lessonId: "ch04-lesson-01", chapterId: "chapter-04", sourceRef: { id: "ref-ch04-l01-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 125, end: 140 }, pdfPages: { start: 122, end: 137 } }, status: "verified" },
+  { lessonId: "ch04-lesson-02", chapterId: "chapter-04", sourceRef: { id: "ref-ch04-l02-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 141, end: 148 }, pdfPages: { start: 138, end: 145 } }, status: "verified" },
+  { lessonId: "ch04-lesson-03", chapterId: "chapter-04", sourceRef: { id: "ref-ch04-l03-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 149, end: 162 }, pdfPages: { start: 146, end: 159 } }, status: "verified" },
 ] as const;
 
 export const CHAPTER_REVIEW_PAGE_MAP: readonly ChapterReviewPageMapping[] = [
