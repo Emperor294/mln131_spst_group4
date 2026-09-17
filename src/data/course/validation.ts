@@ -3,6 +3,7 @@ import { COURSE_CHAPTERS } from "./chapters";
 import { COURSE_LESSONS } from "./lessons";
 import { MUSEUM_CONCEPTS } from "./museum-concepts";
 import { MUSEUM_ZONES } from "./museum-zones";
+import { ALLIANCE_EDGES, SOCIAL_GROUP_NODES } from "../../features/course/chapter-five/alliance-map-data";
 import { ACADEMIC_SOURCES, MLN131_TEXTBOOK_SOURCE_ID } from "./sources";
 import {
   CHAPTER_REVIEW_PAGE_MAP,
@@ -199,8 +200,8 @@ export function getCourseDataIntegrityIssues(): string[] {
     }
   }
 
-  if (LESSON_TEXTBOOK_PAGE_MAP.length !== 12) {
-    issues.push("LESSON_TEXTBOOK_PAGE_MAP phải có đúng 12 mapping bài học đã được rà soát.");
+  if (LESSON_TEXTBOOK_PAGE_MAP.length !== 15) {
+    issues.push("LESSON_TEXTBOOK_PAGE_MAP phải có đúng 15 mapping bài học đã được rà soát.");
   }
   const mappedLessons = new Set<LessonId>();
   for (const mapping of LESSON_TEXTBOOK_PAGE_MAP) {
@@ -285,7 +286,7 @@ export function getCourseDataIntegrityIssues(): string[] {
         if (sectionOrders.has(section.order)) issues.push(`Lesson ${lesson.id} có section order bị trùng: ${section.order}`);
         sectionOrders.add(section.order);
         validateSection(section, sourceIds, issues, `Lesson ${lesson.id}`, lesson.id, chapter.id, sectionIds, reviewQuestionIds);
-        if (section.status === "verified" && !["chapter-01", "chapter-02", "chapter-03", "chapter-04"].includes(chapter.id)) {
+        if (section.status === "verified" && !["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05"].includes(chapter.id)) {
           issues.push(`Section ${section.id} của ${chapter.id} không được verified trước khi migrate nội dung.`);
         }
       }
@@ -309,6 +310,33 @@ export function getCourseDataIntegrityIssues(): string[] {
   for (const concept of MUSEUM_CONCEPTS) {
     if (!chapterIds.has(concept.chapterId)) issues.push(`Museum concept ${concept.id} tham chiếu chapter không tồn tại: ${concept.chapterId}`);
     for (const reference of concept.sourceRefs) validateScopedReference(reference, sourceIds, issues, `Museum concept ${concept.id}`);
+  }
+
+  const allianceNodeIds = new Set<string>();
+  for (const node of SOCIAL_GROUP_NODES) {
+    if (allianceNodeIds.has(node.id)) issues.push(`AllianceMap node ID bị trùng: ${node.id}`);
+    allianceNodeIds.add(node.id);
+    for (const reference of node.sourceRefs ?? []) {
+      validateScopedReference(reference, sourceIds, issues, `AllianceMap node ${node.id}`);
+    }
+    if (node.status === "verified" && (!node.summary || !(node.sourceRefs?.length))) {
+      issues.push(`AllianceMap node ${node.id} verified phải có summary và sourceRefs.`);
+    }
+  }
+
+  const allianceEdgeIds = new Set<string>();
+  for (const edge of ALLIANCE_EDGES) {
+    if (allianceEdgeIds.has(edge.id)) issues.push(`AllianceMap edge ID bị trùng: ${edge.id}`);
+    allianceEdgeIds.add(edge.id);
+    if (!allianceNodeIds.has(edge.from) || !allianceNodeIds.has(edge.to)) {
+      issues.push(`AllianceMap edge ${edge.id} có endpoint không tồn tại.`);
+    }
+    for (const reference of edge.sourceRefs ?? []) {
+      validateScopedReference(reference, sourceIds, issues, `AllianceMap edge ${edge.id}`);
+    }
+    if (edge.status === "verified" && (!edge.summary || !(edge.sourceRefs?.length))) {
+      issues.push(`AllianceMap edge ${edge.id} verified phải có summary và sourceRefs.`);
+    }
   }
 
   return issues;

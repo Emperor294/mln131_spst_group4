@@ -71,8 +71,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           <LessonList lessons={chapter.lessons} />
         </section>
 
-        {chapter.id === "chapter-05" && <AllianceMap />}
         <ChapterLearningContent lessons={chapter.lessons} />
+        {chapter.id === "chapter-05" && <AllianceMap />}
         <RelatedArtifacts chapterId={chapter.id} />
         <SourceList sourceRefs={chapter.sourceRefs} />
         <ChapterNavigation chapter={chapter} />

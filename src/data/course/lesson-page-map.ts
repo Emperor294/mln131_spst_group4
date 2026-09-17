@@ -20,6 +20,9 @@ export const LESSON_TEXTBOOK_PAGE_MAP: readonly LessonTextbookPageMapping[] = [
   { lessonId: "ch04-lesson-01", chapterId: "chapter-04", sourceRef: { id: "ref-ch04-l01-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 125, end: 140 }, pdfPages: { start: 122, end: 137 } }, status: "verified" },
   { lessonId: "ch04-lesson-02", chapterId: "chapter-04", sourceRef: { id: "ref-ch04-l02-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 141, end: 148 }, pdfPages: { start: 138, end: 145 } }, status: "verified" },
   { lessonId: "ch04-lesson-03", chapterId: "chapter-04", sourceRef: { id: "ref-ch04-l03-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 149, end: 162 }, pdfPages: { start: 146, end: 159 } }, status: "verified" },
+  { lessonId: "ch05-lesson-01", chapterId: "chapter-05", sourceRef: { id: "ref-ch05-l01-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 165, end: 172 }, pdfPages: { start: 162, end: 169 } }, status: "verified" },
+  { lessonId: "ch05-lesson-02", chapterId: "chapter-05", sourceRef: { id: "ref-ch05-l02-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 173, end: 176 }, pdfPages: { start: 170, end: 173 } }, status: "verified" },
+  { lessonId: "ch05-lesson-03", chapterId: "chapter-05", sourceRef: { id: "ref-ch05-l03-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 177, end: 192 }, pdfPages: { start: 174, end: 189 } }, status: "verified" },
 ] as const;
 
 export const CHAPTER_REVIEW_PAGE_MAP: readonly ChapterReviewPageMapping[] = [

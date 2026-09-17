@@ -170,6 +170,16 @@
 .alliance-map figcaption { align-items: center; color: rgba(242,238,229,.48); display: flex; flex-wrap: wrap; font: 500 .58rem/1.5 var(--font-be-vietnam-pro); gap: 14px; letter-spacing: .08em; padding-top: 18px; text-transform: uppercase; }
 .alliance-map figcaption ol { display: flex; gap: 14px; list-style: none; }
 .alliance-map figcaption li:not(:last-child)::after { color: var(--course-red); content: " / "; margin-left: 14px; }
+.alliance-map__context { color: var(--course-muted); font: 400 .82rem/1.75 var(--font-be-vietnam-pro); letter-spacing: 0; max-width: 760px; text-transform: none; }
+.alliance-map__fallback { border-top: 1px solid var(--course-line); margin-top: 24px; padding-top: 24px; text-transform: none; }
+.alliance-map__fallback h3 { color: var(--course-gold); font: 600 .62rem/1.4 var(--font-be-vietnam-pro); letter-spacing: .1em; text-transform: uppercase; }
+.alliance-map__fallback ol,.alliance-map__fallback ul { display: grid; gap: 12px; list-style: none; margin-top: 16px; }
+.alliance-map__fallback ol { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.alliance-map__fallback li { border-left: 1px solid var(--course-red); display: grid; gap: 6px; padding-left: 14px; }
+.alliance-map__fallback li strong { color: var(--course-ivory); font: 500 .9rem/1.35 var(--font-noto-serif-display); }
+.alliance-map__fallback li span { color: var(--course-muted); font: 400 .78rem/1.65 var(--font-be-vietnam-pro); }
+.alliance-map__fallback ul { border-top: 1px solid var(--course-line); padding-top: 18px; }
+.alliance-map__fallback ul li { border-left-color: var(--course-gold); }
 
 .chapter-navigation { align-items: stretch; display: grid; gap: 20px; grid-template-columns: 1fr auto 1fr; padding-top: 52px; }
 .chapter-navigation > div:last-child { justify-self: end; }
@@ -228,6 +238,7 @@
   .alliance-map__canvas { aspect-ratio: 1/1.2; min-height: 500px; }
   .alliance-map__node { min-width: 118px; padding: 15px 12px; }
   .alliance-map figcaption { align-items: flex-start; flex-direction: column; }
+  .alliance-map__fallback ol { grid-template-columns: 1fr; }
   .chapter-navigation { grid-template-columns: 1fr 1fr; }
   .chapter-navigation__all { grid-column: 1/-1; grid-row: 1; justify-self: center; }
   .chapter-navigation > div { grid-row: 2; }
