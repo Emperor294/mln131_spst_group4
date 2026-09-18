@@ -7,12 +7,14 @@ export type MuseumInteractionTarget =
       meshName: MuseumMeshName;
       root: THREE.Object3D;
       highlightMesh: THREE.Mesh;
+      maxInteractionDistance: number;
     }
   | {
       kind: "concept-station";
       stationId: string;
       root: THREE.Object3D;
       highlightMesh: THREE.Mesh;
+      maxInteractionDistance: number;
     };
 
 export interface MuseumInteractionRegistry {

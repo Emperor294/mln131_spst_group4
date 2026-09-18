@@ -67,3 +67,29 @@ groups exhaust the wider social-class structure.
 5. Follow the chapter CTA, return to the museum, and confirm pointer lock can be re-entered.
 6. Confirm legacy artifacts still open the legacy artifact dialog independently.
 7. Inspect Zone 5, Zone 6, and Zone 7 wording for semantic and visual neutrality.
+
+## Phase 4D visual QA
+
+The runtime keeps one shared interaction raycast. It first tests the 26 cached
+interactables (9 legacy artifact roots plus 17 academic station roots), then
+checks the four cached structural collision meshes up to the candidate hit.
+The legacy distance is 8 world units; academic stations use a conservative
+5-world-unit distance so a station cannot be selected from across the gallery.
+
+Review at `1440`, `1024`, `768`, and `390` CSS pixels:
+
+- loading screen shows real GLB progress and never fakes a percentage;
+- onboarding can be dismissed and does not recapture pointer lock;
+- zone sign, HUD, and entry toast remain readable without blocking a corridor;
+- academic station labels stay short, muted, and legible;
+- `Khám phá` and `Xem hiện vật` prompts match the target kind;
+- crosshair state changes by shape/scale as well as accent, with no pulse;
+- a wall between the camera and a station/artifact blocks interaction;
+- each station opens the right concept group and chapter CTA;
+- legacy artifacts still open `MuseumObjectDialog` independently;
+- ConceptDialog remains scrollable, keyboard-closeable, and free of horizontal overflow;
+- Zone 5 hierarchy stays restrained and does not imply an exhaustive social-class map;
+- Zone 6 remains abstract/neutral, and Zone 7 remains non-prescriptive.
+
+Visual inspection is intentionally separate from the static checks; it should
+be repeated in a browser after engine or asset changes.

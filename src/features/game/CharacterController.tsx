@@ -5,6 +5,7 @@ import type { ComponentRef, MutableRefObject } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { PointerLockControls } from '@react-three/drei';
 import * as THREE from 'three';
+import { findMuseumCollisionMeshes } from '@/features/museum/runtime/museum-geometry';
 
 type Props = {
   enabled?: boolean;
@@ -14,13 +15,6 @@ type Props = {
     z?: number;
   };
 };
-
-const COLLISION_MESH_NAMES = [
-  'Plane042_Material_0',
-  'Plane057_Material_0',
-  'Plane059_Material_0',
-  'Plane058_Material_0',
-] as const;
 
 const MOVEMENT_SPEED = 3;
 const JUMP_SPEED = 6;
@@ -72,15 +66,7 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
   }, []);
 
   const findCollisionMeshes = useCallback(() => {
-    const meshes: THREE.Mesh[] = [];
-
-    scene.traverse((child) => {
-      if (child instanceof THREE.Mesh && COLLISION_MESH_NAMES.includes(child.name as (typeof COLLISION_MESH_NAMES)[number])) {
-        meshes.push(child);
-      }
-    });
-
-    collisionMeshesRef.current = meshes;
+    collisionMeshesRef.current = findMuseumCollisionMeshes(scene);
   }, [scene]);
 
   useEffect(() => {

@@ -45,6 +45,8 @@ export default function ConceptDialog({ isOpen, station, onClose }: ConceptDialo
           <span>{zone.shortTitle}</span>
         </div>
 
+        <p className="-mt-3 text-xs leading-5 text-slate-500">{chapter.title}</p>
+
         <p className="text-base leading-7 text-slate-700">{activeConcept.summary}</p>
 
         <div className="border-l-2 border-[#b23a48] bg-slate-50 px-4 py-3 text-sm text-slate-700">

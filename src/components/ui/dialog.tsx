@@ -57,7 +57,7 @@ export default function Dialog({ isOpen, onClose, title, children }: DialogProps
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-hidden"
+        className="relative mx-4 flex w-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden rounded-lg bg-white shadow-xl max-h-[90vh]"
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
@@ -74,7 +74,7 @@ export default function Dialog({ isOpen, onClose, title, children }: DialogProps
         </div>
         
         {/* Content */}
-        <div className="p-6 overflow-y-auto">
+        <div className="max-h-[calc(90vh-6rem)] overflow-y-auto overscroll-contain p-6">
           {children}
         </div>
       </div>

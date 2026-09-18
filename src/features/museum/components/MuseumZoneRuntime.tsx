@@ -21,6 +21,20 @@ export default function MuseumZoneRuntime({ registry, onZoneChange }: MuseumZone
   const currentZoneRef = useRef<MuseumZoneId | null>(null);
 
   useFrame(({ camera }) => {
+    const currentZoneId = currentZoneRef.current;
+    if (currentZoneId) {
+      const currentZone = MUSEUM_SPATIAL_ZONES.find((zone) => zone.zoneId === currentZoneId);
+      if (currentZone) {
+        const currentDistance = Math.hypot(
+          camera.position.x - currentZone.center[0],
+          camera.position.z - currentZone.center[2],
+        );
+        // A small exit buffer prevents rapid A/B changes when activation
+        // circles overlap at a zone boundary.
+        if (currentDistance <= currentZone.activationRadius + 0.35) return;
+      }
+    }
+
     let nearestZone: MuseumZoneId | null = null;
     let nearestDistance = Number.POSITIVE_INFINITY;
 

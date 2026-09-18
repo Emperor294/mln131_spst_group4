@@ -6,6 +6,10 @@ import * as THREE from 'three';
 import { MUSEUM_INTERACTIVE_MESH_NAMES } from '@/data/course/artifact-bindings';
 import type { MuseumMeshName } from '@/data/course/artifact-bindings';
 import type { MuseumInteractionRegistry, MuseumInteractionTarget } from '@/features/museum/runtime/interaction-registry';
+import {
+  findMuseumCollisionMeshes,
+  LEGACY_ARTIFACT_INTERACTION_DISTANCE,
+} from '@/features/museum/runtime/museum-geometry';
 
 type Props = {
   inputEnabled?: boolean;
@@ -22,9 +26,6 @@ type EmissiveMaterial = THREE.Material & {
 type ColorMaterial = THREE.Material & {
   color: THREE.Color;
 };
-
-/** Maximum distance at which a museum target can be inspected. */
-export const MUSEUM_INTERACTION_DISTANCE = 8;
 
 function hasEmissive(material: THREE.Material): material is EmissiveMaterial {
   return (
@@ -85,7 +86,9 @@ export default function ObjectHighlighter({
   const { camera, scene } = useThree();
   const raycasterRef = useRef(new THREE.Raycaster());
   const intersectionsRef = useRef<THREE.Intersection[]>([]);
+  const occluderIntersectionsRef = useRef<THREE.Intersection[]>([]);
   const centerNdcRef = useRef(new THREE.Vector2(0, 0));
+  const occluderRootsRef = useRef<THREE.Mesh[]>([]);
   const hoveredTargetRef = useRef<MuseumInteractionTarget | null>(null);
   const highlightStateRef = useRef<HighlightState | null>(null);
 
@@ -135,6 +138,7 @@ export default function ObjectHighlighter({
         meshName: meshName as MuseumMeshName,
         root,
         highlightMesh,
+        maxInteractionDistance: LEGACY_ARTIFACT_INTERACTION_DISTANCE,
       };
       artifactTargets.push(target);
       interactionRegistry.register(target);
@@ -147,6 +151,13 @@ export default function ObjectHighlighter({
       onHoverChange?.(null);
     };
   }, [interactionRegistry, onHoverChange, scene]);
+
+  useEffect(() => {
+    occluderRootsRef.current = findMuseumCollisionMeshes(scene);
+    return () => {
+      occluderRootsRef.current = [];
+    };
+  }, [scene]);
 
   const resolveTarget = (object: THREE.Object3D) => {
     let current: THREE.Object3D | null = object;
@@ -161,7 +172,7 @@ export default function ObjectHighlighter({
   const getCenterTarget = () => {
     if (interactionRegistry.roots.length === 0) return null;
 
-    raycasterRef.current.far = MUSEUM_INTERACTION_DISTANCE;
+    raycasterRef.current.far = LEGACY_ARTIFACT_INTERACTION_DISTANCE;
     raycasterRef.current.setFromCamera(centerNdcRef.current, camera);
     const intersections = intersectionsRef.current;
     intersections.length = 0;
@@ -169,10 +180,21 @@ export default function ObjectHighlighter({
 
     for (const intersection of intersections) {
       const target = resolveTarget(intersection.object);
-      if (target) {
-        intersections.length = 0;
-        return target;
-      }
+      if (!target || intersection.distance > target.maxInteractionDistance) continue;
+
+      const occluders = occluderRootsRef.current;
+      const occluderIntersections = occluderIntersectionsRef.current;
+      const candidateDistance = intersection.distance;
+      raycasterRef.current.far = Math.max(0, candidateDistance - 0.025);
+      occluderIntersections.length = 0;
+      raycasterRef.current.intersectObjects(occluders, true, occluderIntersections);
+      const blocked = occluderIntersections.some((occluder) => occluder.distance < candidateDistance - 0.03);
+      occluderIntersections.length = 0;
+      raycasterRef.current.far = LEGACY_ARTIFACT_INTERACTION_DISTANCE;
+
+      intersections.length = 0;
+      if (!blocked) return target;
+      return null;
     }
 
     intersections.length = 0;

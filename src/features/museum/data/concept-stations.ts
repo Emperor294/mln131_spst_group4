@@ -23,7 +23,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-01",
     conceptIds: ["museum-concept-ch01-origins", "museum-concept-ch01-development"],
     position: [-0.8, 0, 2.35],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "KHỞI NGUỒN",
   },
   {
@@ -31,7 +31,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-01",
     conceptIds: ["museum-concept-ch01-marx-engels", "museum-concept-ch01-research"],
     position: [0.8, 0, 2.35],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "NỀN TẢNG",
   },
   {
@@ -39,7 +39,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-02",
     conceptIds: ["museum-concept-ch02-worker", "museum-concept-ch02-mission"],
     position: [2.0, 0, 2.35],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "GIAI CẤP",
   },
   {
@@ -47,7 +47,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-02",
     conceptIds: ["museum-concept-ch02-conditions", "museum-concept-ch02-vietnam"],
     position: [3.25, 0, 2.35],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "THỰC HIỆN",
   },
   {
@@ -55,7 +55,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-03",
     conceptIds: ["museum-concept-ch03-socialism"],
     position: [-3.25, 0, 2.35],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "CHỦ NGHĨA XÃ HỘI",
   },
   {
@@ -63,7 +63,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-03",
     conceptIds: ["museum-concept-ch03-transition", "museum-concept-ch03-vietnam-path"],
     position: [-2.0, 0, 2.35],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "CHUYỂN TIẾP",
   },
   {
@@ -71,7 +71,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-04",
     conceptIds: ["museum-concept-ch04-democracy", "museum-concept-ch04-state"],
     position: [-2.8, 0, 0.2],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "DÂN CHỦ & NHÀ NƯỚC",
   },
   {
@@ -79,7 +79,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-04",
     conceptIds: ["museum-concept-ch04-democracy-state"],
     position: [-1.55, 0, 0.2],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "MỐI QUAN HỆ",
   },
   {
@@ -87,7 +87,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-05",
     conceptIds: ["museum-concept-ch05-structure", "museum-concept-ch05-transformation"],
     position: [-0.8, 0, -0.55],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "CƠ CẤU",
   },
   {
@@ -95,7 +95,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-05",
     conceptIds: ["museum-concept-ch05-alliance-necessity"],
     position: [0.8, 0, -0.55],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "TÍNH TẤT YẾU",
     variant: "alliance",
   },
@@ -104,7 +104,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-05",
     conceptIds: ["museum-concept-ch05-vietnam-alliance", "museum-concept-ch05-alliance-contents"],
     position: [0, 0, -1.85],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "LIÊN MINH",
     variant: "alliance",
   },
@@ -113,7 +113,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-06",
     conceptIds: ["museum-concept-ch06-nation-meanings", "museum-concept-ch06-national-relations"],
     position: [2.0, 0, -0.55],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "DÂN TỘC",
   },
   {
@@ -121,7 +121,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-06",
     conceptIds: ["museum-concept-ch06-religion-framework", "museum-concept-ch06-religion-principles"],
     position: [3.25, 0, -0.55],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "TÔN GIÁO",
   },
   {
@@ -129,7 +129,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-06",
     conceptIds: ["museum-concept-ch06-ethnic-religious-relations"],
     position: [2.6, 0, -1.85],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "QUAN HỆ Ở VIỆT NAM",
   },
   {
@@ -137,7 +137,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-07",
     conceptIds: ["museum-concept-ch07-family-position", "museum-concept-ch07-family-functions"],
     position: [-2.0, 0, -3.05],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "VỊ TRÍ & CHỨC NĂNG",
   },
   {
@@ -145,7 +145,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-07",
     conceptIds: ["museum-concept-ch07-family-foundations"],
     position: [0.15, 0, -2.8],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "NỀN TẢNG",
   },
   {
@@ -153,7 +153,7 @@ export const MUSEUM_CONCEPT_STATIONS: readonly MuseumConceptStation[] = [
     zoneId: "museum-zone-07",
     conceptIds: ["museum-concept-ch07-vietnamese-family"],
     position: [2.0, 0, -3.35],
-    interactionRadius: 8,
+    interactionRadius: 5,
     label: "GIA ĐÌNH VIỆT NAM",
   },
 ] as const;

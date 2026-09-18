@@ -4,7 +4,9 @@ import { Html } from '@react-three/drei';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import type { MuseumConceptStation } from '../data/concept-stations';
+import { getMuseumZoneAccent } from '../data/spatial-zones';
 import type { MuseumInteractionRegistry, MuseumInteractionTarget } from '../runtime/interaction-registry';
+import { ACADEMIC_STATION_INTERACTION_DISTANCE } from '../runtime/museum-geometry';
 
 interface ConceptStationProps {
   station: MuseumConceptStation;
@@ -17,7 +19,7 @@ export default function ConceptStation({ station, zoneNumber, registry }: Concep
   const highlightMeshRef = useRef<THREE.Mesh>(null);
   const targetRef = useRef<MuseumInteractionTarget | null>(null);
   const isAlliance = station.variant === 'alliance';
-  const accent = isAlliance ? '#c76c53' : '#b89b69';
+  const accent = isAlliance ? '#c76c53' : getMuseumZoneAccent(station.zoneId);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -29,6 +31,7 @@ export default function ConceptStation({ station, zoneNumber, registry }: Concep
       stationId: station.id,
       root,
       highlightMesh,
+      maxInteractionDistance: ACADEMIC_STATION_INTERACTION_DISTANCE,
     };
     targetRef.current = target;
     registry.register(target);
@@ -53,10 +56,16 @@ export default function ConceptStation({ station, zoneNumber, registry }: Concep
         <boxGeometry args={[0.3, 0.04, 0.04]} />
         <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.35} />
       </mesh>
+      {isAlliance && (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.18, 0]}>
+          <torusGeometry args={[0.56, 0.025, 8, 32]} />
+          <meshBasicMaterial color={accent} transparent opacity={0.72} />
+        </mesh>
+      )}
       <Html center position={[0, 1.48, 0]} distanceFactor={5} style={{ pointerEvents: 'none' }}>
         <div
           aria-label={`${station.label}. Nhấn để khám phá.`}
-          className="w-36 select-none border border-white/15 bg-[#101425]/88 px-2 py-1.5 text-center text-white shadow-lg backdrop-blur-sm"
+          className="museum-motion w-36 select-none border border-white/15 bg-[#101425]/88 px-2 py-1.5 text-center text-white shadow-lg backdrop-blur-sm"
         >
           <span className="block text-[9px] tracking-[0.2em] text-[#d3a06d]">{zoneNumber.toString().padStart(2, '0')}</span>
           <strong className="mt-0.5 block text-[10px] font-medium tracking-[0.08em]">{station.label}</strong>

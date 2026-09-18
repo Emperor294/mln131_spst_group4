@@ -10,6 +10,17 @@ export interface MuseumSpatialZone {
   labelPosition: MuseumWorldPosition;
 }
 
+/** Muted wayfinding accents shared by signs, stations and future HUD styling. */
+export const MUSEUM_ZONE_ACCENTS: Readonly<Record<MuseumZoneId, string>> = {
+  "museum-zone-01": "#b89b69",
+  "museum-zone-02": "#9da9bd",
+  "museum-zone-03": "#a98678",
+  "museum-zone-04": "#9d8cb0",
+  "museum-zone-05": "#c76c53",
+  "museum-zone-06": "#8eaa9b",
+  "museum-zone-07": "#b49a7e",
+};
+
 /**
  * The GLB is a compact open gallery rather than seven authored rooms. These
  * centres are a logical learning layer inside its walkable rectangle.
@@ -68,4 +79,8 @@ export const MUSEUM_SPATIAL_ZONES: readonly MuseumSpatialZone[] = [
 
 export function getSpatialZoneById(zoneId: MuseumZoneId) {
   return MUSEUM_SPATIAL_ZONES.find((zone) => zone.zoneId === zoneId);
+}
+
+export function getMuseumZoneAccent(zoneId: MuseumZoneId) {
+  return MUSEUM_ZONE_ACCENTS[zoneId];
 }
