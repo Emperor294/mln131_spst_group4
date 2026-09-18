@@ -13,6 +13,7 @@ import {
   LESSON_TEXTBOOK_PAGE_MAP,
 } from "./lesson-page-map";
 import { CHAPTER_TEXTBOOK_PAGE_MAP } from "./textbook-page-map";
+import { getAssessmentDataIssues } from "./assessment/validation";
 import type {
   AcademicSourceId,
   ChapterId,
@@ -396,6 +397,7 @@ export function getCourseDataIntegrityIssues(): string[] {
   }
 
   issues.push(...getMuseumSpatialDataIssues());
+  issues.push(...getAssessmentDataIssues());
 
   const allianceNodeIds = new Set<string>();
   for (const node of SOCIAL_GROUP_NODES) {

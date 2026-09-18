@@ -9,4 +9,5 @@ export * from "./textbook-page-map";
 export * from "./lesson-page-map";
 export * from "./museum-concepts";
 export * from "./museum-blueprint";
+export * from "./assessment";
 export * from "./validation";
