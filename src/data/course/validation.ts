@@ -150,6 +150,15 @@ export function getCourseDataIntegrityIssues(): string[] {
   const sourceReferenceIds = new Set<ScopedSourceReferenceId>();
   const sectionIds = new Set<string>();
   const reviewQuestionIds = new Set<string>();
+  const expectedReviewQuestionCounts: Readonly<Record<ChapterId, number>> = {
+    "chapter-01": 4,
+    "chapter-02": 5,
+    "chapter-03": 3,
+    "chapter-04": 5,
+    "chapter-05": 4,
+    "chapter-06": 5,
+    "chapter-07": 4,
+  };
 
   if (COURSE_CHAPTERS.length !== 7) issues.push("COURSE_CHAPTERS phải có đúng 7 chương.");
   for (const chapter of COURSE_CHAPTERS) {
@@ -296,9 +305,21 @@ export function getCourseDataIntegrityIssues(): string[] {
       }
     }
     if ([1, 2, 3].some((order) => !lessonOrders.has(order))) issues.push(`${chapter.id} phải có lesson order liên tục từ 1 đến 3.`);
+
+    const reviewQuestionCount = chapter.lessons.reduce(
+      (total, lesson) => total + lesson.sections.reduce(
+        (lessonTotal, section) => section.type === "review-question" ? lessonTotal + section.questions.length : lessonTotal,
+        0,
+      ),
+      0,
+    );
+    if (reviewQuestionCount !== expectedReviewQuestionCounts[chapter.id]) {
+      issues.push(`${chapter.id} phải có ${expectedReviewQuestionCounts[chapter.id]} câu hỏi ôn tập, hiện có ${reviewQuestionCount}.`);
+    }
   }
 
   if (lessonIds.size !== 21) issues.push("Khung khóa học phải có đúng 21 lesson ID duy nhất.");
+  if (reviewQuestionIds.size !== 30) issues.push(`Khóa học phải có đúng 30 câu hỏi ôn tập duy nhất, hiện có ${reviewQuestionIds.size}.`);
 
   for (const artifact of ARTIFACTS) {
     if (artifact.chapterId && !chapterIds.has(artifact.chapterId)) issues.push(`Artifact ${artifact.id} tham chiếu chapter không tồn tại: ${artifact.chapterId}`);

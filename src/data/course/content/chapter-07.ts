@@ -78,11 +78,7 @@ export const CHAPTER_07_LESSON_CONTENT = {
           { id: "family-function-economy", label: "Kinh tế và tổ chức tiêu dùng", description: "Tham gia sản xuất, tái sản xuất sức lao động và tổ chức tiêu dùng của gia đình." },
           { id: "family-function-affection", label: "Tâm sinh lý và tình cảm", description: "Thỏa mãn nhu cầu tình cảm, văn hóa, tinh thần và duy trì sự gắn kết gia đình." },
         ],
-        edges: [
-          { id: "family-function-link-reproduction", from: "family-function-reproduction", to: "family-function-education", label: "cùng duy trì" },
-          { id: "family-function-link-education", from: "family-function-education", to: "family-function-economy", label: "cùng hỗ trợ" },
-          { id: "family-function-link-economy", from: "family-function-economy", to: "family-function-affection", label: "cùng bảo đảm" },
-        ],
+        edges: [],
         sourceRefs: [refs.l01FunctionReproduction, refs.l01FunctionEducation, refs.l01FunctionEconomy, refs.l01FunctionPsychosocial],
       },
       {

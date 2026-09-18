@@ -14,7 +14,6 @@ export default function ReviewQuestionSection({ section }: { section: ReviewQues
             <span>{String(item.order).padStart(2, "0")}</span>
             <div>
               <p>{item.question}</p>
-              <SourceList sourceRefs={item.sourceRefs} headingLevel="h4" />
             </div>
           </li>
         ))}
