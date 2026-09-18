@@ -23,6 +23,12 @@ export const LESSON_TEXTBOOK_PAGE_MAP: readonly LessonTextbookPageMapping[] = [
   { lessonId: "ch05-lesson-01", chapterId: "chapter-05", sourceRef: { id: "ref-ch05-l01-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 165, end: 172 }, pdfPages: { start: 162, end: 169 } }, status: "verified" },
   { lessonId: "ch05-lesson-02", chapterId: "chapter-05", sourceRef: { id: "ref-ch05-l02-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 173, end: 176 }, pdfPages: { start: 170, end: 173 } }, status: "verified" },
   { lessonId: "ch05-lesson-03", chapterId: "chapter-05", sourceRef: { id: "ref-ch05-l03-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 177, end: 192 }, pdfPages: { start: 174, end: 189 } }, status: "verified" },
+  { lessonId: "ch06-lesson-01", chapterId: "chapter-06", sourceRef: { id: "ref-ch06-l01-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 196, end: 213 }, pdfPages: { start: 193, end: 210 } }, status: "verified" },
+  { lessonId: "ch06-lesson-02", chapterId: "chapter-06", sourceRef: { id: "ref-ch06-l02-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 214, end: 227 }, pdfPages: { start: 211, end: 224 } }, status: "verified" },
+  { lessonId: "ch06-lesson-03", chapterId: "chapter-06", sourceRef: { id: "ref-ch06-l03-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 228, end: 236 }, pdfPages: { start: 225, end: 233 } }, status: "verified" },
+  { lessonId: "ch07-lesson-01", chapterId: "chapter-07", sourceRef: { id: "ref-ch07-l01-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 239, end: 249 }, pdfPages: { start: 236, end: 246 } }, status: "verified" },
+  { lessonId: "ch07-lesson-02", chapterId: "chapter-07", sourceRef: { id: "ref-ch07-l02-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 250, end: 256 }, pdfPages: { start: 247, end: 253 } }, status: "verified" },
+  { lessonId: "ch07-lesson-03", chapterId: "chapter-07", sourceRef: { id: "ref-ch07-l03-range", sourceId: MLN131_TEXTBOOK_SOURCE_ID, bookPages: { start: 257, end: 268 }, pdfPages: { start: 254, end: 265 } }, status: "verified" },
 ] as const;
 
 export const CHAPTER_REVIEW_PAGE_MAP: readonly ChapterReviewPageMapping[] = [

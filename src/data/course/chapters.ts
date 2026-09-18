@@ -2,8 +2,6 @@ import type { CourseChapter } from "./types";
 import { getLessonsByChapterId } from "./lessons";
 import { getChapterTextbookSourceRefs } from "./textbook-page-map";
 
-const PLACEHOLDER_DESCRIPTION = "[Nội dung giáo trình sẽ được bổ sung]";
-
 export const COURSE_CHAPTERS: readonly CourseChapter[] = [
   {
     id: "chapter-01",
@@ -60,8 +58,8 @@ export const COURSE_CHAPTERS: readonly CourseChapter[] = [
     number: 6,
     title:
       "Vấn đề dân tộc và tôn giáo trong thời kỳ quá độ lên chủ nghĩa xã hội",
-    description: PLACEHOLDER_DESCRIPTION,
-    status: "placeholder",
+    description: "Chương trình bày các khái niệm về dân tộc, tôn giáo, quan hệ dân tộc – tôn giáo và cách tiếp cận của giáo trình đối với những vấn đề này trong thời kỳ quá độ lên chủ nghĩa xã hội.",
+    status: "verified",
     museumZoneId: "zone-06",
     lessons: getLessonsByChapterId("chapter-06"),
     sourceRefs: getChapterTextbookSourceRefs("chapter-06"),
@@ -70,8 +68,8 @@ export const COURSE_CHAPTERS: readonly CourseChapter[] = [
     id: "chapter-07",
     number: 7,
     title: "Vấn đề gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội",
-    description: PLACEHOLDER_DESCRIPTION,
-    status: "placeholder",
+    description: "Chương trình bày khái niệm, vị trí, chức năng và những cơ sở xây dựng, phát triển gia đình Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội theo giáo trình.",
+    status: "verified",
     museumZoneId: "zone-07",
     lessons: getLessonsByChapterId("chapter-07"),
     sourceRefs: getChapterTextbookSourceRefs("chapter-07"),
