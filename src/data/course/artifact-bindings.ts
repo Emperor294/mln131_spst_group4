@@ -15,6 +15,11 @@ export const ARTIFACT_BINDINGS = {
 
 export type MuseumMeshName = keyof typeof ARTIFACT_BINDINGS;
 
+/** Canonical interactive mesh names used by the museum runtime. */
+export const MUSEUM_INTERACTIVE_MESH_NAMES: readonly MuseumMeshName[] = Object.keys(
+  ARTIFACT_BINDINGS,
+) as MuseumMeshName[];
+
 export interface ArtifactBinding {
   meshName: MuseumMeshName;
   artifactId: ArtifactId;

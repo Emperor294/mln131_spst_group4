@@ -1,12 +1,12 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
-import type { ComponentRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ComponentRef, MutableRefObject } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { PointerLockControls } from '@react-three/drei';
 import * as THREE from 'three';
 
-type Props = { 
+type Props = {
   enabled?: boolean;
   spawnLocation?: {
     x?: number;
@@ -15,24 +15,38 @@ type Props = {
   };
 };
 
+const COLLISION_MESH_NAMES = [
+  'Plane042_Material_0',
+  'Plane057_Material_0',
+  'Plane059_Material_0',
+  'Plane058_Material_0',
+] as const;
+
+const MOVEMENT_SPEED = 3;
+const JUMP_SPEED = 6;
+const GRAVITY = 20;
+const COLLISION_BUFFER = 0.05;
+const WORLD_UP = new THREE.Vector3(0, 1, 0);
+
 export default function CharacterController({ enabled = true, spawnLocation }: Props) {
   const { camera, scene } = useThree();
   const controlsRef = useRef<ComponentRef<typeof PointerLockControls>>(null);
-  const velocityRef = useRef(new THREE.Vector3());
   const [isLocked, setIsLocked] = useState(false);
   const enabledRef = useRef(enabled);
-  enabledRef.current = enabled;
-  
-  // References to collision meshes
   const collisionMeshesRef = useRef<THREE.Mesh[]>([]);
+  const collisionIntersectionsRef = useRef<THREE.Intersection[]>([]);
   const raycasterRef = useRef(new THREE.Raycaster());
+  const velocityRef = useRef(new THREE.Vector3());
+  const movementDirectionRef = useRef(new THREE.Vector3());
+  const cameraDirectionRef = useRef(new THREE.Vector3());
+  const cameraRightRef = useRef(new THREE.Vector3());
+  const currentPositionRef = useRef(new THREE.Vector3());
+  const desiredPositionRef = useRef(new THREE.Vector3());
+  const resolvedPositionRef = useRef(new THREE.Vector3());
+  const collisionCandidateRef = useRef(new THREE.Vector3());
+  const collisionDeltaRef = useRef(new THREE.Vector3());
+  const collisionDirectionRef = useRef(new THREE.Vector3());
 
-  // Movement speed
-  const MOVEMENT_SPEED = 3;
-  const JUMP_SPEED = 6;
-  const GRAVITY = 20;
-
-  // Key states
   const keysRef = useRef({
     forward: false,
     backward: false,
@@ -41,77 +55,52 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
     jump: false,
   });
 
-  // Physics state
   const physicsRef = useRef({
     onGround: true,
     verticalVelocity: 0,
     groundLevel: 1.7,
   });
 
-  // Find collision meshes in the scene
-  const findCollisionMeshes = () => {
-    const collisionMeshNames = ['Plane042_Material_0', 'Plane057_Material_0', 'Plane059_Material_0', 'Plane058_Material_0'];
+  enabledRef.current = enabled;
+
+  const clearMovementKeys = useCallback(() => {
+    keysRef.current.forward = false;
+    keysRef.current.backward = false;
+    keysRef.current.left = false;
+    keysRef.current.right = false;
+    keysRef.current.jump = false;
+  }, []);
+
+  const findCollisionMeshes = useCallback(() => {
     const meshes: THREE.Mesh[] = [];
-    
+
     scene.traverse((child) => {
-      if (child instanceof THREE.Mesh && collisionMeshNames.includes(child.name)) {
+      if (child instanceof THREE.Mesh && COLLISION_MESH_NAMES.includes(child.name as (typeof COLLISION_MESH_NAMES)[number])) {
         meshes.push(child);
-        console.log(`Found collision mesh: ${child.name}`, child.position);
       }
     });
-    
+
     collisionMeshesRef.current = meshes;
-    console.log(`Total collision meshes found: ${meshes.length}`);
-  };
-
-  // Mesh-based collision detection using raycasting
-  const checkCollision = (newX: number, newZ: number) => {
-    if (collisionMeshesRef.current.length === 0) return false;
-    
-    const currentPos = camera.position.clone();
-    const newPos = new THREE.Vector3(newX, currentPos.y, newZ);
-    
-    // Create a ray from current position to new position
-    const direction = newPos.sub(currentPos).normalize();
-    const distance = currentPos.distanceTo(newPos);
-    
-    raycasterRef.current.set(currentPos, direction);
-    const intersects = raycasterRef.current.intersectObjects(collisionMeshesRef.current, true);
-    
-    // Check if any intersection is closer than our movement distance
-    for (const intersect of intersects) {
-      if (intersect.distance < distance) { // Add small buffer
-        return true; // Collision detected
-      }
-    }
-    
-    return false; // No collision
-  };
-
-  // Initialize spawn location
-  useEffect(() => {
-    if (spawnLocation) {
-      camera.position.set(
-        spawnLocation.x ?? 0,
-        spawnLocation.y ?? physicsRef.current.groundLevel,
-        spawnLocation.z ?? 0
-      );
-    }
-  }, [spawnLocation, camera]);
-
-  // Find collision meshes when scene is loaded
-  useEffect(() => {
-    // Wait a bit for the scene to load, then find collision meshes
-    const timer = setTimeout(() => {
-      findCollisionMeshes();
-    }, 1000);
-    
-    return () => clearTimeout(timer);
   }, [scene]);
+
+  useEffect(() => {
+    findCollisionMeshes();
+  }, [findCollisionMeshes]);
+
+  useEffect(() => {
+    if (!spawnLocation) return;
+
+    camera.position.set(
+      spawnLocation.x ?? 0,
+      spawnLocation.y ?? physicsRef.current.groundLevel,
+      spawnLocation.z ?? 0,
+    );
+  }, [camera, spawnLocation]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!enabledRef.current) return;
+
       switch (event.code) {
         case 'KeyW':
           keysRef.current.forward = true;
@@ -126,17 +115,18 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
           keysRef.current.right = true;
           break;
         case 'Space':
-          if (physicsRef.current.onGround) {
+          if (!event.repeat && physicsRef.current.onGround) {
             keysRef.current.jump = true;
             physicsRef.current.verticalVelocity = JUMP_SPEED;
             physicsRef.current.onGround = false;
           }
           break;
+        default:
+          break;
       }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
-      if (!enabledRef.current) return;
       switch (event.code) {
         case 'KeyW':
           keysRef.current.forward = false;
@@ -153,82 +143,115 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
         case 'Space':
           keysRef.current.jump = false;
           break;
+        default:
+          break;
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-
-    
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
+    const handleWindowBlur = () => {
+      clearMovementKeys();
+      controlsRef.current?.unlock?.();
+      setIsLocked(false);
     };
 
-    
-  }, []);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') handleWindowBlur();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleWindowBlur);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleWindowBlur);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearMovementKeys();
+    };
+  }, [clearMovementKeys]);
 
   useEffect(() => {
     if (!enabled) {
-      try {
-        controlsRef.current?.unlock?.();
-      } catch {}
+      clearMovementKeys();
+      controlsRef.current?.unlock?.();
       setIsLocked(false);
     }
-  }, [enabled]);
+  }, [clearMovementKeys, enabled]);
 
   useFrame((_, delta) => {
     if (!isLocked || !enabledRef.current) return;
 
+    const frameDelta = Math.min(delta, 0.05);
     const keys = keysRef.current;
     const velocity = velocityRef.current;
+    const movementDirection = movementDirectionRef.current;
     const physics = physicsRef.current;
 
-    // Reset horizontal velocity only
-    velocity.x = 0;
-    velocity.z = 0;
+    camera.getWorldDirection(cameraDirectionRef.current);
+    const cameraDirection = cameraDirectionRef.current;
+    cameraDirection.y = 0;
+    if (cameraDirection.lengthSq() > 0) cameraDirection.normalize();
 
-    // Get camera direction vectors
-    const cameraDirection = new THREE.Vector3();
-    camera.getWorldDirection(cameraDirection);
-    
-    // Create right vector (perpendicular to camera direction)
-    const cameraRight = new THREE.Vector3();
-    cameraRight.crossVectors(cameraDirection, new THREE.Vector3(0, 1, 0)).normalize();
+    const cameraRight = cameraRightRef.current;
+    cameraRight.crossVectors(cameraDirection, WORLD_UP).normalize();
 
-    // Calculate horizontal movement direction relative to camera
-    if (keys.forward) {
-      velocity.add(cameraDirection.clone().multiplyScalar(MOVEMENT_SPEED));
-    }
-    if (keys.backward) {
-      velocity.add(cameraDirection.clone().multiplyScalar(-MOVEMENT_SPEED));
-    }
-    if (keys.right) {
-      velocity.add(cameraRight.clone().multiplyScalar(MOVEMENT_SPEED));
-    }
-    if (keys.left) {
-      velocity.add(cameraRight.clone().multiplyScalar(-MOVEMENT_SPEED));
+    movementDirection.set(0, 0, 0);
+    if (keys.forward) movementDirection.add(cameraDirection);
+    if (keys.backward) movementDirection.sub(cameraDirection);
+    if (keys.right) movementDirection.add(cameraRight);
+    if (keys.left) movementDirection.sub(cameraRight);
+
+    if (movementDirection.lengthSq() > 0) movementDirection.normalize();
+    velocity.copy(movementDirection).multiplyScalar(MOVEMENT_SPEED);
+
+    const currentPosition = currentPositionRef.current.copy(camera.position);
+    const desiredPosition = desiredPositionRef.current.copy(currentPosition);
+    desiredPosition.x += velocity.x * frameDelta;
+    desiredPosition.z += velocity.z * frameDelta;
+
+    // Resolve horizontal movement on each axis from the latest resolved position.
+    // Desired and resolved positions remain separate so collision checks never
+    // mutate values used by subsequent distance calculations.
+    const resolvedPosition = resolvedPositionRef.current.copy(currentPosition);
+    const collisionCandidate = collisionCandidateRef.current.copy(resolvedPosition);
+
+    collisionCandidate.x = desiredPosition.x;
+    if (!isPathBlocked(
+      resolvedPosition,
+      collisionCandidate,
+      collisionMeshesRef,
+      raycasterRef,
+      collisionIntersectionsRef,
+      collisionDeltaRef,
+      collisionDirectionRef,
+    )) {
+      resolvedPosition.x = desiredPosition.x;
     }
 
-    // Check for collisions before applying movement
-    const newX = camera.position.x + velocity.x * delta;
-    const newZ = camera.position.z + velocity.z * delta;
-    
-    // Only apply movement if no collision is detected
-    if (!checkCollision(newX, camera.position.z)) {
-      camera.position.x = newX;
-    }
-    if (!checkCollision(camera.position.x, newZ)) {
-      camera.position.z = newZ;
+    collisionCandidate.copy(resolvedPosition);
+    collisionCandidate.z = desiredPosition.z;
+    if (!isPathBlocked(
+      resolvedPosition,
+      collisionCandidate,
+      collisionMeshesRef,
+      raycasterRef,
+      collisionIntersectionsRef,
+      collisionDeltaRef,
+      collisionDirectionRef,
+    )) {
+      resolvedPosition.z = desiredPosition.z;
     }
 
-    // Apply gravity and jumping physics (vertical only)
+    camera.position.x = resolvedPosition.x;
+    camera.position.z = resolvedPosition.z;
+
     if (!physics.onGround) {
-      physics.verticalVelocity -= GRAVITY * delta;
-      camera.position.y += physics.verticalVelocity * delta;
+      physics.verticalVelocity -= GRAVITY * frameDelta;
+      camera.position.y += physics.verticalVelocity * frameDelta;
     }
 
-    // Check if landed on ground
     if (camera.position.y <= physics.groundLevel) {
       camera.position.y = physics.groundLevel;
       physics.verticalVelocity = 0;
@@ -236,11 +259,9 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
     }
   });
 
-  const handleLock = () => {
-    setIsLocked(true);
-  };
-
+  const handleLock = () => setIsLocked(true);
   const handleUnlock = () => {
+    clearMovementKeys();
     setIsLocked(false);
   };
 
@@ -252,4 +273,30 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
       enabled={enabled}
     />
   );
-} 
+}
+
+function isPathBlocked(
+  start: THREE.Vector3,
+  end: THREE.Vector3,
+  collisionMeshesRef: MutableRefObject<THREE.Mesh[]>,
+  raycasterRef: MutableRefObject<THREE.Raycaster>,
+  intersectionsRef: MutableRefObject<THREE.Intersection[]>,
+  deltaRef: MutableRefObject<THREE.Vector3>,
+  directionRef: MutableRefObject<THREE.Vector3>,
+) {
+  if (collisionMeshesRef.current.length === 0) return false;
+
+  const delta = deltaRef.current.copy(end).sub(start);
+  const distance = delta.length();
+  if (distance <= Number.EPSILON) return false;
+
+  const direction = directionRef.current.copy(delta).multiplyScalar(1 / distance);
+  raycasterRef.current.set(start, direction);
+
+  const intersections = intersectionsRef.current;
+  intersections.length = 0;
+  raycasterRef.current.intersectObjects(collisionMeshesRef.current, true, intersections);
+  const blocked = intersections.some((intersection) => intersection.distance <= distance + COLLISION_BUFFER);
+  intersections.length = 0;
+  return blocked;
+}

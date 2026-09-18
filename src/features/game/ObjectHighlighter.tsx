@@ -1,13 +1,15 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
+import { MUSEUM_INTERACTIVE_MESH_NAMES } from '@/data/course/artifact-bindings';
+import type { MuseumMeshName } from '@/data/course/artifact-bindings';
 
 type Props = {
-  onDoorClick?: () => void;
   inputEnabled?: boolean;
-  onObjectClick?: (objectName: string) => void;
+  onObjectClick?: (objectName: MuseumMeshName) => void;
+  onHoverChange?: (objectName: MuseumMeshName | null) => void;
 };
 
 type EmissiveMaterial = THREE.Material & {
@@ -18,6 +20,17 @@ type EmissiveMaterial = THREE.Material & {
 type ColorMaterial = THREE.Material & {
   color: THREE.Color;
 };
+
+type InteractiveTarget = {
+  meshName: MuseumMeshName;
+  root: THREE.Object3D;
+  highlightMesh: THREE.Mesh;
+  originalMaterial: THREE.Material | THREE.Material[] | null;
+  ownedHighlightMaterial: THREE.Material | THREE.Material[] | null;
+};
+
+/** Maximum distance at which a legacy museum artifact can be inspected. */
+export const MUSEUM_INTERACTION_DISTANCE = 8;
 
 function hasEmissive(material: THREE.Material): material is EmissiveMaterial {
   return (
@@ -32,277 +45,184 @@ function hasColor(material: THREE.Material): material is ColorMaterial {
   return 'color' in material && material.color instanceof THREE.Color;
 }
 
-export default function ObjectHighlighter({ onDoorClick, inputEnabled = true, onObjectClick }: Props) {
-  const { camera, scene } = useThree();
-  const raycaster = useRef(new THREE.Raycaster());
-  const mouse = useRef(new THREE.Vector2(0, 0));
-  const highlighted = useRef<THREE.Mesh | null>(null);
-  const originalMaterial = useRef<THREE.Material | null>(null);
+function findFirstMesh(object: THREE.Object3D): THREE.Mesh | null {
+  if ((object as THREE.Mesh).isMesh) return object as THREE.Mesh;
 
+  for (const child of object.children) {
+    const mesh = findFirstMesh(child);
+    if (mesh) return mesh;
+  }
 
-  // Door refs/state
-  const doorObjectRef = useRef<THREE.Object3D | null>(null);
-  const doorOpenProgress = useRef(0); 
-  const doorOpenAngleRadians = Math.PI / 2;
-  const targetOpenRef = useRef(0); // 0 closed, 1 open
-  const isSelectedRef = useRef(false);
-  const doorHighlightMeshRef = useRef<THREE.Mesh | null>(null);
-  const wasHoveringRef = useRef(false);
+  return null;
+}
 
-  // Highlightable objects refs/state
-  const highlightableObjects = ['bacho', 'aonau', 'tuyenngon', 'aodai', 'anh3', 'Cone', 'anh1', 'anh2', 'CoffeeTable'];
-  const objectRefs = useRef<{ [key: string]: THREE.Object3D | null }>({});
-  const objectHighlightMeshRefs = useRef<{ [key: string]: THREE.Mesh | null }>({});
-  const objectOriginalMaterials = useRef<{ [key: string]: THREE.Material | null }>({});
-  const objectHighlighted = useRef<{ [key: string]: THREE.Mesh | null }>({});
-  const wasHoveringObjects = useRef<{ [key: string]: boolean }>({});
-
-  useEffect(() => {
-    const foundDoor = scene.getObjectByName('Cube_4') as THREE.Object3D | null;
-    if (foundDoor) {
-      doorObjectRef.current = foundDoor;
-
-      // Resolve a stable mesh under the door for highlighting
-      const findFirstMesh = (obj: THREE.Object3D): THREE.Mesh | null => {
-        if ((obj as THREE.Mesh).isMesh) return obj as THREE.Mesh;
-        for (const child of obj.children) {
-          const m = findFirstMesh(child);
-          if (m) return m;
-        }
-        return null;
-      };
-      doorHighlightMeshRef.current = findFirstMesh(foundDoor);
-    } else {
-      console.warn('Object with name Cube_4 not found in scene');
+function createHighlightMaterial(material: THREE.Material | THREE.Material[]) {
+  const highlight = (source: THREE.Material) => {
+    const clone = source.clone();
+    if (hasColor(clone)) clone.color.setHex(0xff6b6b);
+    if (hasEmissive(clone)) {
+      clone.emissive.setHex(0xff6b6b);
+      clone.emissiveIntensity = Math.max(clone.emissiveIntensity, 0.15);
     }
+    return clone;
+  };
 
-    // Find all highlightable objects
-    highlightableObjects.forEach(objectName => {
-      const foundObject = scene.getObjectByName(objectName) as THREE.Object3D | null;
-      if (foundObject) {
-        objectRefs.current[objectName] = foundObject;
+  return Array.isArray(material) ? material.map(highlight) : highlight(material);
+}
 
-        // Resolve a stable mesh under the object for highlighting
-        const findFirstMesh = (obj: THREE.Object3D): THREE.Mesh | null => {
-          if ((obj as THREE.Mesh).isMesh) return obj as THREE.Mesh;
-          for (const child of obj.children) {
-            const m = findFirstMesh(child);
-            if (m) return m;
-          }
-          return null;
-        };
-        objectHighlightMeshRefs.current[objectName] = findFirstMesh(foundObject);
-      } else {
-        console.warn(`Object with name ${objectName} not found in scene`);
-      }
-    });
-  }, [scene]);
+function disposeOwnedMaterial(material: THREE.Material | THREE.Material[] | null) {
+  if (!material) return;
+  if (Array.isArray(material)) {
+    material.forEach((entry) => entry.dispose());
+  } else {
+    material.dispose();
+  }
+}
 
-  // Click to toggle selection/open state using window-level listener
+export default function ObjectHighlighter({
+  inputEnabled = true,
+  onObjectClick,
+  onHoverChange,
+}: Props) {
+  const { camera, scene } = useThree();
+  const raycasterRef = useRef(new THREE.Raycaster());
+  const targetRootsRef = useRef<THREE.Object3D[]>([]);
+  const targetsByNameRef = useRef(new Map<MuseumMeshName, InteractiveTarget>());
+  const namesByObjectRef = useRef(new Map<THREE.Object3D, MuseumMeshName>());
+  const intersectionsRef = useRef<THREE.Intersection[]>([]);
+  const hoveredTargetRef = useRef<InteractiveTarget | null>(null);
+  const centerNdcRef = useRef(new THREE.Vector2(0, 0));
+
   useEffect(() => {
-    const onPointerDown = () => {
-      if (!inputEnabled) return;
-      mouse.current.set(0, 0);
-      raycaster.current.setFromCamera(mouse.current, camera);
-      const intersects = raycaster.current.intersectObjects(scene.children, true);
+    const targetsByName = targetsByNameRef.current;
+    const targetRoots = targetRootsRef.current;
+    const namesByObject = namesByObjectRef.current;
 
-      let clickedDoor = false;
-      let clickedObject: string | null = null;
-      
-      for (const i of intersects) {
-        let obj: THREE.Object3D | null = i.object as THREE.Object3D | null;
-        while (obj) {
-          if (obj === doorObjectRef.current || obj.name === 'Cube_4') {
-            clickedDoor = true;
-            break;
-          }
-          // Check if clicked on any highlightable object
-          highlightableObjects.forEach(objectName => {
-            if (obj === objectRefs.current[objectName] || obj!.name === objectName) {
-              clickedObject = objectName;
-            }
-          });
-          obj = obj.parent as THREE.Object3D | null;
-        }
-        if (clickedDoor || clickedObject) break;
-      }
-
-      if (clickedDoor) {
-        isSelectedRef.current = !isSelectedRef.current;
-        targetOpenRef.current = isSelectedRef.current ? 1 : 0;
-        if (onDoorClick && isSelectedRef.current) onDoorClick();
-
-        // Update highlight
-        if (isSelectedRef.current && doorHighlightMeshRef.current) {
-          const mesh = doorHighlightMeshRef.current;
-          if (mesh.material) {
-            if (highlighted.current && originalMaterial.current) {
-              highlighted.current.material = originalMaterial.current;
-            }
-            const currentMat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-            originalMaterial.current = currentMat;
-            const glowMat = currentMat.clone();
-            if (hasEmissive(glowMat)) {
-              glowMat.emissive.setHex(0x00ffff);
-              glowMat.emissiveIntensity = 0.5;
-            }
-            mesh.material = glowMat;
-            highlighted.current = mesh;
-          }
-        } else {
-          if (highlighted.current && originalMaterial.current) {
-            highlighted.current.material = originalMaterial.current;
-          }
-          highlighted.current = null;
-          originalMaterial.current = null;
-        }
-      } else if (clickedObject) {
-        // Handle click on highlightable object
-        if (onObjectClick) {
-          onObjectClick(clickedObject);
-        }
-      } else {
-        // Click elsewhere: close and deselect
-        if (isSelectedRef.current) {
-          isSelectedRef.current = false;
-          targetOpenRef.current = 0;
-          if (highlighted.current && originalMaterial.current) {
-            highlighted.current.material = originalMaterial.current;
-          }
-          highlighted.current = null;
-          originalMaterial.current = null;
-        }
-      }
+    const restoreTarget = (target: InteractiveTarget) => {
+      if (target.originalMaterial) target.highlightMesh.material = target.originalMaterial;
+      disposeOwnedMaterial(target.ownedHighlightMaterial);
+      target.originalMaterial = null;
+      target.ownedHighlightMaterial = null;
     };
 
-    window.addEventListener('pointerdown', onPointerDown, { capture: true });
-    return () => window.removeEventListener('pointerdown', onPointerDown, true);
-  }, [camera, scene, inputEnabled, onDoorClick, onObjectClick]);
+    targetsByName.forEach(restoreTarget);
+    targetsByName.clear();
+    targetRoots.length = 0;
+    namesByObject.clear();
+    hoveredTargetRef.current = null;
 
-  useFrame((_, delta) => {
-    if (!inputEnabled) return;
-    // Animate towards target open state
-    const damping = 8;
-    const alpha = 1 - Math.exp(-damping * delta);
-    doorOpenProgress.current += (targetOpenRef.current - doorOpenProgress.current) * alpha;
-    if (doorObjectRef.current) {
-      const angle = THREE.MathUtils.lerp(0, doorOpenAngleRadians, doorOpenProgress.current);
-      doorObjectRef.current.rotation.z = angle;
+    for (const meshName of MUSEUM_INTERACTIVE_MESH_NAMES) {
+      const root = scene.getObjectByName(meshName);
+      if (!root) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(`[museum] Interactive mesh not found: ${meshName}`);
+        }
+        continue;
+      }
+
+      const highlightMesh = findFirstMesh(root);
+      if (!highlightMesh) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(`[museum] Interactive binding has no mesh: ${meshName}`);
+        }
+        continue;
+      }
+
+      targetsByName.set(meshName, {
+        meshName,
+        root,
+        highlightMesh,
+        originalMaterial: null,
+        ownedHighlightMaterial: null,
+      });
+      targetRoots.push(root);
+      namesByObject.set(root, meshName);
     }
 
-    // Raycast each frame to detect hover
-    mouse.current.set(0, 0);
-    raycaster.current.setFromCamera(mouse.current, camera);
-    const intersects = raycaster.current.intersectObjects(scene.children, true);
+    return () => {
+      targetsByName.forEach(restoreTarget);
+      targetsByName.clear();
+      targetRoots.length = 0;
+      namesByObject.clear();
+      hoveredTargetRef.current = null;
+      onHoverChange?.(null);
+    };
+  }, [onHoverChange, scene]);
 
-    let isHoveringDoor = false;
-    const hoveringObjects: { [key: string]: boolean } = {};
-    
-    // Initialize hovering state for all objects
-    highlightableObjects.forEach(objectName => {
-      hoveringObjects[objectName] = false;
-    });
+  const resolveTarget = (object: THREE.Object3D) => {
+    let current: THREE.Object3D | null = object;
+    while (current) {
+      const meshName = namesByObjectRef.current.get(current);
+      if (meshName) return targetsByNameRef.current.get(meshName) ?? null;
+      current = current.parent;
+    }
+    return null;
+  };
 
-    for (const i of intersects) {
-      let obj: THREE.Object3D | null = i.object as THREE.Object3D | null;
-      while (obj) {
-        if (obj === doorObjectRef.current || obj.name === 'Cube_4') {
-          isHoveringDoor = true;
-          break;
-        }
-        // Check if hovering over any highlightable object
-        highlightableObjects.forEach(objectName => {
-          if (obj === objectRefs.current[objectName] || obj!.name === objectName) {
-            hoveringObjects[objectName] = true;
-          }
-        });
-        obj = obj.parent as THREE.Object3D | null;
+  const getCenterTarget = () => {
+    if (targetRootsRef.current.length === 0) return null;
+
+    raycasterRef.current.far = MUSEUM_INTERACTION_DISTANCE;
+    raycasterRef.current.setFromCamera(centerNdcRef.current, camera);
+    const intersections = intersectionsRef.current;
+    intersections.length = 0;
+    raycasterRef.current.intersectObjects(targetRootsRef.current, true, intersections);
+
+    for (const intersection of intersections) {
+      const target = resolveTarget(intersection.object);
+      if (target) {
+        intersections.length = 0;
+        return target;
       }
-      if (isHoveringDoor || Object.values(hoveringObjects).some(hovering => hovering)) break;
     }
 
-    // Manage highlight: selection takes precedence; otherwise show hover highlight
-    if (isSelectedRef.current) {
-      if (doorHighlightMeshRef.current) {
-        const mesh = doorHighlightMeshRef.current;
-        if (mesh.material) {
-          if (highlighted.current !== mesh) {
-            if (highlighted.current && originalMaterial.current) {
-              highlighted.current.material = originalMaterial.current;
-            }
-            const currentMat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-            originalMaterial.current = currentMat;
-            const glowMat = currentMat.clone();
-            if (hasEmissive(glowMat)) {
-              glowMat.emissive.setHex(0x00ffff);
-              glowMat.emissiveIntensity = 0.5;
-            }
-            mesh.material = glowMat;
-            highlighted.current = mesh;
-          }
-        }
+    intersections.length = 0;
+    return null;
+  };
+
+  const setHighlight = (target: InteractiveTarget | null) => {
+    const previousTarget = hoveredTargetRef.current;
+    if (previousTarget === target) return;
+
+    if (previousTarget) {
+      if (previousTarget.originalMaterial) {
+        previousTarget.highlightMesh.material = previousTarget.originalMaterial;
       }
-      wasHoveringRef.current = isHoveringDoor;
+      disposeOwnedMaterial(previousTarget.ownedHighlightMaterial);
+      previousTarget.originalMaterial = null;
+      previousTarget.ownedHighlightMaterial = null;
+    }
+
+    if (target && !target.originalMaterial) {
+      target.originalMaterial = target.highlightMesh.material;
+      target.ownedHighlightMaterial = createHighlightMaterial(target.highlightMesh.material);
+      target.highlightMesh.material = target.ownedHighlightMaterial;
+    }
+
+    hoveredTargetRef.current = target;
+    onHoverChange?.(target?.meshName ?? null);
+  };
+
+  useEffect(() => {
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!inputEnabled) return;
+      if (!(event.target instanceof HTMLCanvasElement)) return;
+      const target = hoveredTargetRef.current;
+      if (target) onObjectClick?.(target.meshName);
+    };
+
+    window.addEventListener('pointerdown', handlePointerDown, { capture: true });
+    return () => window.removeEventListener('pointerdown', handlePointerDown, true);
+  }, [inputEnabled, onObjectClick]);
+
+  useFrame(() => {
+    if (!inputEnabled) {
+      setHighlight(null);
       return;
     }
 
-    if (isHoveringDoor !== wasHoveringRef.current) {
-      // Hover state changed and not selected
-      if (highlighted.current && originalMaterial.current) {
-        highlighted.current.material = originalMaterial.current;
-      }
-      highlighted.current = null;
-      originalMaterial.current = null;
-
-      if (isHoveringDoor && doorHighlightMeshRef.current) {
-        const mesh = doorHighlightMeshRef.current;
-        if (mesh.material) {
-          const currentMat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-          originalMaterial.current = currentMat;
-          const glowMat = currentMat.clone();
-          if (hasEmissive(glowMat)) {
-            glowMat.emissive.setHex(0x00ffff);
-            glowMat.emissiveIntensity = 0.25; // softer hover glow
-          }
-          mesh.material = glowMat;
-          highlighted.current = mesh;
-        }
-      }
-      wasHoveringRef.current = isHoveringDoor;
-    }
-
-    // Handle hover color changes for all highlightable objects
-    highlightableObjects.forEach(objectName => {
-      const isHovering = hoveringObjects[objectName];
-      const wasHovering = wasHoveringObjects.current[objectName] || false;
-      
-      if (isHovering !== wasHovering) {
-        // Restore original material if was highlighted
-        if (objectHighlighted.current[objectName] && objectOriginalMaterials.current[objectName]) {
-          objectHighlighted.current[objectName]!.material = objectOriginalMaterials.current[objectName]!;
-        }
-        objectHighlighted.current[objectName] = null;
-        objectOriginalMaterials.current[objectName] = null;
-
-        // Apply highlight if hovering
-        if (isHovering && objectHighlightMeshRefs.current[objectName]) {
-          const mesh = objectHighlightMeshRefs.current[objectName]!;
-          if (mesh.material) {
-            const currentMat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-            objectOriginalMaterials.current[objectName] = currentMat;
-            const glowMat = currentMat.clone();
-            if (hasColor(glowMat)) {
-              glowMat.color.setHex(0xff6b6b); // Red color for all objects
-            }
-            mesh.material = glowMat;
-            objectHighlighted.current[objectName] = mesh;
-          }
-        }
-        wasHoveringObjects.current[objectName] = isHovering;
-      }
-    });
+    setHighlight(getCenterTarget());
   });
 
   return null;
 }
- 
