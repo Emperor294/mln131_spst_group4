@@ -22,7 +22,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "sequence",
     sourceRefs: lessonRefs("ch01-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch01-marx-engels",
@@ -34,7 +34,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "inspect",
     sourceRefs: lessonRefs("ch01-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch01-development",
@@ -46,7 +46,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "sequence",
     sourceRefs: lessonRefs("ch01-lesson-02"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch01-research",
@@ -58,7 +58,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "inspect",
     sourceRefs: lessonRefs("ch01-lesson-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch02-worker",
@@ -70,7 +70,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "inspect",
     sourceRefs: lessonRefs("ch02-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch02-mission",
@@ -82,7 +82,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "reveal",
     sourceRefs: lessonRefs("ch02-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch02-conditions",
@@ -94,7 +94,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "compare",
     sourceRefs: lessonRefs("ch02-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch02-vietnam",
@@ -106,7 +106,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "connect",
     sourceRefs: lessonRefs("ch02-lesson-02", "ch02-lesson-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch03-socialism",
@@ -118,7 +118,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "inspect",
     sourceRefs: lessonRefs("ch03-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch03-transition",
@@ -130,7 +130,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "sequence",
     sourceRefs: lessonRefs("ch03-lesson-02"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch03-vietnam-path",
@@ -142,7 +142,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "reveal",
     sourceRefs: lessonRefs("ch03-lesson-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch04-democracy",
@@ -154,7 +154,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "sequence",
     sourceRefs: lessonRefs("ch04-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch04-state",
@@ -166,7 +166,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "inspect",
     sourceRefs: lessonRefs("ch04-lesson-02"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch04-democracy-state",
@@ -178,7 +178,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "connect",
     sourceRefs: lessonRefs("ch04-lesson-02", "ch04-lesson-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch05-structure",
@@ -190,7 +190,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "compare",
     sourceRefs: lessonRefs("ch05-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch05-transformation",
@@ -202,7 +202,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "reveal",
     sourceRefs: lessonRefs("ch05-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch05-alliance-necessity",
@@ -214,7 +214,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "connect",
     sourceRefs: lessonRefs("ch05-lesson-02"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch05-vietnam-alliance",
@@ -226,7 +226,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "connect",
     sourceRefs: lessonRefs("ch05-lesson-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch05-alliance-contents",
@@ -238,7 +238,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "reveal",
     sourceRefs: lessonRefs("ch05-lesson-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch06-nation-meanings",
@@ -250,7 +250,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "compare",
     sourceRefs: lessonRefs("ch06-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch06-national-relations",
@@ -262,7 +262,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "connect",
     sourceRefs: lessonRefs("ch06-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch06-religion-framework",
@@ -274,7 +274,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "inspect",
     sourceRefs: lessonRefs("ch06-lesson-02"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch06-religion-principles",
@@ -286,7 +286,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "reveal",
     sourceRefs: lessonRefs("ch06-lesson-02"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch06-ethnic-religious-relations",
@@ -298,7 +298,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "connect",
     sourceRefs: lessonRefs("ch06-lesson-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch07-family-position",
@@ -310,7 +310,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "inspect",
     sourceRefs: lessonRefs("ch07-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch07-family-functions",
@@ -322,7 +322,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "reveal",
     sourceRefs: lessonRefs("ch07-lesson-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch07-family-foundations",
@@ -334,7 +334,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "compare",
     sourceRefs: lessonRefs("ch07-lesson-02"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-concept-ch07-vietnamese-family",
@@ -346,7 +346,7 @@ export const MUSEUM_CONCEPTS = [
     suggestedInteraction: "sequence",
     sourceRefs: lessonRefs("ch07-lesson-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
 ] as const satisfies readonly MuseumConcept[];
 

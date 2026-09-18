@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { X } from 'lucide-react';
 
 interface DialogProps {
@@ -12,6 +12,7 @@ interface DialogProps {
 
 export default function Dialog({ isOpen, onClose, title, children }: DialogProps) {
   const titleId = useId();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -23,6 +24,21 @@ export default function Dialog({ isOpen, onClose, title, children }: DialogProps
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    closeButtonRef.current?.focus();
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -50,6 +66,7 @@ export default function Dialog({ isOpen, onClose, title, children }: DialogProps
             type="button"
             aria-label="Đóng hộp thoại"
             onClick={onClose}
+            ref={closeButtonRef}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />

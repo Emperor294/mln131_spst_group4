@@ -4,6 +4,7 @@ import { COURSE_LESSONS } from "./lessons";
 import { MUSEUM_CONCEPTS } from "./museum-concepts";
 import { MUSEUM_ZONES } from "./museum-zones";
 import { ALLIANCE_EDGES, SOCIAL_GROUP_NODES } from "../../features/course/chapter-five/alliance-map-data";
+import { getMuseumSpatialDataIssues } from "../../features/museum/data/spatial-validation";
 import { ACADEMIC_SOURCES, MLN131_TEXTBOOK_SOURCE_ID } from "./sources";
 import {
   CHAPTER_REVIEW_PAGE_MAP,
@@ -393,6 +394,8 @@ export function getCourseDataIntegrityIssues(): string[] {
       }
     }
   }
+
+  issues.push(...getMuseumSpatialDataIssues());
 
   const allianceNodeIds = new Set<string>();
   for (const node of SOCIAL_GROUP_NODES) {

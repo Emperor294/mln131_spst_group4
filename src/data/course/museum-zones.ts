@@ -19,7 +19,7 @@ export const MUSEUM_ZONES = [
     suggestedExperience: "Origins / Timeline Gallery",
     sourceRefs: getChapterTextbookSourceRefs("chapter-01"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-zone-02",
@@ -38,7 +38,7 @@ export const MUSEUM_ZONES = [
     suggestedExperience: "Mission & Social Role Gallery",
     sourceRefs: getChapterTextbookSourceRefs("chapter-02"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-zone-03",
@@ -56,7 +56,7 @@ export const MUSEUM_ZONES = [
     suggestedExperience: "Transition Corridor",
     sourceRefs: getChapterTextbookSourceRefs("chapter-03"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-zone-04",
@@ -74,7 +74,7 @@ export const MUSEUM_ZONES = [
     suggestedExperience: "Democracy & State Hall",
     sourceRefs: getChapterTextbookSourceRefs("chapter-04"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-zone-05",
@@ -94,7 +94,7 @@ export const MUSEUM_ZONES = [
     suggestedExperience: "Alliance Network",
     sourceRefs: getChapterTextbookSourceRefs("chapter-05"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-zone-06",
@@ -114,7 +114,7 @@ export const MUSEUM_ZONES = [
     suggestedExperience: "Identity & Belief Gallery",
     sourceRefs: getChapterTextbookSourceRefs("chapter-06"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
   {
     id: "museum-zone-07",
@@ -133,7 +133,7 @@ export const MUSEUM_ZONES = [
     suggestedExperience: "Family & Society Space",
     sourceRefs: getChapterTextbookSourceRefs("chapter-07"),
     contentStatus: "verified",
-    implementationStatus: "planned",
+    implementationStatus: "implemented",
   },
 ] as const satisfies readonly MuseumZone[];
 

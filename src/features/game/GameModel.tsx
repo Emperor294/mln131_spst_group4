@@ -2,11 +2,18 @@
 
 import { Canvas } from '@react-three/fiber';
 import { useGLTF, Sky, Html } from '@react-three/drei';
-import { Suspense, useCallback, useState } from 'react';
+import { Suspense, useCallback, useRef, useState } from 'react';
+import { getMuseumZoneById } from '@/data/course';
+import type { MuseumZoneId } from '@/data/course';
 import CharacterController from './CharacterController';
 import ObjectHighlighter from './ObjectHighlighter';
 import Crosshair from './Crosshair';
 import MuseumObjectDialog from '../../components/ui/museum-object-dialog';
+import ConceptDialog from '@/features/museum/components/ConceptDialog';
+import MuseumZoneRuntime from '@/features/museum/components/MuseumZoneRuntime';
+import { getConceptStationById } from '@/features/museum/data/concept-stations';
+import { createMuseumInteractionRegistry } from '@/features/museum/runtime/interaction-registry';
+import type { MuseumInteractionRegistry, MuseumInteractionTarget } from '@/features/museum/runtime/interaction-registry';
 
 const SPAWN_LOCATION = {
   x: 0,
@@ -46,23 +53,59 @@ function Floor() {
   );
 }
 
+function ZoneHud({ zoneId }: { zoneId: MuseumZoneId | null }) {
+  const zone = zoneId ? getMuseumZoneById(zoneId) : undefined;
+  if (!zone) return null;
+
+  return (
+    <div className="pointer-events-none absolute left-4 top-28 z-10 border-l-2 border-[#b23a48] bg-black/45 px-3 py-2 text-white backdrop-blur-sm">
+      <span className="block text-[10px] tracking-[0.2em] text-[#d3a06d]">ZONE {zone.order.toString().padStart(2, '0')}</span>
+      <strong className="mt-0.5 block text-xs font-medium tracking-[0.12em]">{zone.shortTitle}</strong>
+    </div>
+  );
+}
+
+function InteractionPrompt({ target }: { target: MuseumInteractionTarget | null }) {
+  if (!target) return null;
+
+  const label = target.kind === 'concept-station' ? 'Nhấn để khám phá' : 'Nhấn để xem hiện vật';
+  return (
+    <div aria-live="polite" className="pointer-events-none fixed left-1/2 top-[56%] z-20 -translate-x-1/2 rounded-full border border-white/20 bg-black/60 px-3 py-1.5 text-xs text-white/85 backdrop-blur-sm">
+      {label}
+    </div>
+  );
+}
+
 export default function MuseumExplorerScene() {
-  const [objectDialogOpen, setObjectDialogOpen] = useState(false);
+  const interactionRegistryRef = useRef<MuseumInteractionRegistry>(createMuseumInteractionRegistry());
   const [selectedObject, setSelectedObject] = useState('');
-  const [hoveredObject, setHoveredObject] = useState<string | null>(null);
+  const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
+  const [hoveredTarget, setHoveredTarget] = useState<MuseumInteractionTarget | null>(null);
+  const [activeZoneId, setActiveZoneId] = useState<MuseumZoneId | null>(null);
+  const selectedStation = selectedStationId ? getConceptStationById(selectedStationId) ?? null : null;
+  const dialogOpen = Boolean(selectedObject || selectedStation);
 
-  const handleObjectClick = useCallback((objectName: string) => {
-    setSelectedObject(objectName);
-    setObjectDialogOpen(true);
+  const handleTargetClick = useCallback((target: MuseumInteractionTarget) => {
+    if (target.kind === 'concept-station') {
+      setSelectedObject('');
+      setSelectedStationId(target.stationId);
+    } else {
+      setSelectedStationId(null);
+      setSelectedObject(target.meshName);
+    }
   }, []);
 
-  const handleObjectDialogClose = useCallback(() => {
-    setObjectDialogOpen(false);
+  const handleDialogClose = useCallback(() => {
     setSelectedObject('');
+    setSelectedStationId(null);
   }, []);
 
-  const handleHoverChange = useCallback((objectName: string | null) => {
-    setHoveredObject(objectName);
+  const handleHoverChange = useCallback((target: MuseumInteractionTarget | null) => {
+    setHoveredTarget(target);
+  }, []);
+
+  const handleZoneChange = useCallback((zoneId: MuseumZoneId | null) => {
+    setActiveZoneId(zoneId);
   }, []);
 
   return (
@@ -76,12 +119,14 @@ export default function MuseumExplorerScene() {
         <p className="text-sm">ESC - Exit</p>
       </div>
 
-      <Crosshair isHoveringObject={Boolean(hoveredObject)} />
+      <ZoneHud zoneId={activeZoneId} />
+      <InteractionPrompt target={dialogOpen ? null : hoveredTarget} />
+      <Crosshair isHoveringObject={Boolean(hoveredTarget)} />
 
       <Canvas
         dpr={[1, 1.5]}
         shadows={false}
-        style={{ pointerEvents: objectDialogOpen ? 'none' : 'auto' }}
+        style={{ pointerEvents: dialogOpen ? 'none' : 'auto' }}
       >
         <Suspense fallback={<LoaderOverlayCanvas />}>
           <Sky
@@ -105,22 +150,33 @@ export default function MuseumExplorerScene() {
           <MuseumModel />
 
           <CharacterController
-            enabled={!objectDialogOpen}
+            enabled={!dialogOpen}
             spawnLocation={SPAWN_LOCATION}
           />
 
+          <MuseumZoneRuntime
+            registry={interactionRegistryRef.current}
+            onZoneChange={handleZoneChange}
+          />
+
           <ObjectHighlighter
-            inputEnabled={!objectDialogOpen}
+            inputEnabled={!dialogOpen}
+            interactionRegistry={interactionRegistryRef.current}
             onHoverChange={handleHoverChange}
-            onObjectClick={handleObjectClick}
+            onTargetClick={handleTargetClick}
           />
         </Suspense>
       </Canvas>
 
       <MuseumObjectDialog
-        isOpen={objectDialogOpen}
-        onClose={handleObjectDialogClose}
+        isOpen={Boolean(selectedObject)}
+        onClose={handleDialogClose}
         objectName={selectedObject}
+      />
+      <ConceptDialog
+        isOpen={Boolean(selectedStation)}
+        onClose={handleDialogClose}
+        station={selectedStation}
       />
     </div>
   );

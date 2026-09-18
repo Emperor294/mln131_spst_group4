@@ -5,11 +5,13 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { MUSEUM_INTERACTIVE_MESH_NAMES } from '@/data/course/artifact-bindings';
 import type { MuseumMeshName } from '@/data/course/artifact-bindings';
+import type { MuseumInteractionRegistry, MuseumInteractionTarget } from '@/features/museum/runtime/interaction-registry';
 
 type Props = {
   inputEnabled?: boolean;
-  onObjectClick?: (objectName: MuseumMeshName) => void;
-  onHoverChange?: (objectName: MuseumMeshName | null) => void;
+  interactionRegistry: MuseumInteractionRegistry;
+  onTargetClick?: (target: MuseumInteractionTarget) => void;
+  onHoverChange?: (target: MuseumInteractionTarget | null) => void;
 };
 
 type EmissiveMaterial = THREE.Material & {
@@ -21,15 +23,7 @@ type ColorMaterial = THREE.Material & {
   color: THREE.Color;
 };
 
-type InteractiveTarget = {
-  meshName: MuseumMeshName;
-  root: THREE.Object3D;
-  highlightMesh: THREE.Mesh;
-  originalMaterial: THREE.Material | THREE.Material[] | null;
-  ownedHighlightMaterial: THREE.Material | THREE.Material[] | null;
-};
-
-/** Maximum distance at which a legacy museum artifact can be inspected. */
+/** Maximum distance at which a museum target can be inspected. */
 export const MUSEUM_INTERACTION_DISTANCE = 8;
 
 function hasEmissive(material: THREE.Material): material is EmissiveMaterial {
@@ -72,101 +66,106 @@ function createHighlightMaterial(material: THREE.Material | THREE.Material[]) {
 
 function disposeOwnedMaterial(material: THREE.Material | THREE.Material[] | null) {
   if (!material) return;
-  if (Array.isArray(material)) {
-    material.forEach((entry) => entry.dispose());
-  } else {
-    material.dispose();
-  }
+  if (Array.isArray(material)) material.forEach((entry) => entry.dispose());
+  else material.dispose();
+}
+
+interface HighlightState {
+  target: MuseumInteractionTarget;
+  originalMaterial: THREE.Material | THREE.Material[];
+  ownedHighlightMaterial: THREE.Material | THREE.Material[];
 }
 
 export default function ObjectHighlighter({
   inputEnabled = true,
-  onObjectClick,
+  interactionRegistry,
+  onTargetClick,
   onHoverChange,
 }: Props) {
   const { camera, scene } = useThree();
   const raycasterRef = useRef(new THREE.Raycaster());
-  const targetRootsRef = useRef<THREE.Object3D[]>([]);
-  const targetsByNameRef = useRef(new Map<MuseumMeshName, InteractiveTarget>());
-  const namesByObjectRef = useRef(new Map<THREE.Object3D, MuseumMeshName>());
   const intersectionsRef = useRef<THREE.Intersection[]>([]);
-  const hoveredTargetRef = useRef<InteractiveTarget | null>(null);
   const centerNdcRef = useRef(new THREE.Vector2(0, 0));
+  const hoveredTargetRef = useRef<MuseumInteractionTarget | null>(null);
+  const highlightStateRef = useRef<HighlightState | null>(null);
+
+  const restoreHighlight = () => {
+    const highlightState = highlightStateRef.current;
+    if (!highlightState) return;
+
+    highlightState.target.highlightMesh.material = highlightState.originalMaterial;
+    disposeOwnedMaterial(highlightState.ownedHighlightMaterial);
+    highlightStateRef.current = null;
+  };
+
+  const setHighlight = (target: MuseumInteractionTarget | null) => {
+    const previousTarget = hoveredTargetRef.current;
+    if (previousTarget === target) return;
+
+    restoreHighlight();
+    if (target) {
+      const originalMaterial = target.highlightMesh.material;
+      const ownedHighlightMaterial = createHighlightMaterial(originalMaterial);
+      target.highlightMesh.material = ownedHighlightMaterial;
+      highlightStateRef.current = { target, originalMaterial, ownedHighlightMaterial };
+    }
+
+    hoveredTargetRef.current = target;
+    onHoverChange?.(target);
+  };
 
   useEffect(() => {
-    const targetsByName = targetsByNameRef.current;
-    const targetRoots = targetRootsRef.current;
-    const namesByObject = namesByObjectRef.current;
-
-    const restoreTarget = (target: InteractiveTarget) => {
-      if (target.originalMaterial) target.highlightMesh.material = target.originalMaterial;
-      disposeOwnedMaterial(target.ownedHighlightMaterial);
-      target.originalMaterial = null;
-      target.ownedHighlightMaterial = null;
-    };
-
-    targetsByName.forEach(restoreTarget);
-    targetsByName.clear();
-    targetRoots.length = 0;
-    namesByObject.clear();
-    hoveredTargetRef.current = null;
+    const artifactTargets: MuseumInteractionTarget[] = [];
 
     for (const meshName of MUSEUM_INTERACTIVE_MESH_NAMES) {
       const root = scene.getObjectByName(meshName);
       if (!root) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn(`[museum] Interactive mesh not found: ${meshName}`);
-        }
+        if (process.env.NODE_ENV !== 'production') console.warn(`[museum] Interactive mesh not found: ${meshName}`);
         continue;
       }
 
       const highlightMesh = findFirstMesh(root);
       if (!highlightMesh) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn(`[museum] Interactive binding has no mesh: ${meshName}`);
-        }
+        if (process.env.NODE_ENV !== 'production') console.warn(`[museum] Interactive binding has no mesh: ${meshName}`);
         continue;
       }
 
-      targetsByName.set(meshName, {
-        meshName,
+      const target: MuseumInteractionTarget = {
+        kind: 'artifact',
+        meshName: meshName as MuseumMeshName,
         root,
         highlightMesh,
-        originalMaterial: null,
-        ownedHighlightMaterial: null,
-      });
-      targetRoots.push(root);
-      namesByObject.set(root, meshName);
+      };
+      artifactTargets.push(target);
+      interactionRegistry.register(target);
     }
 
     return () => {
-      targetsByName.forEach(restoreTarget);
-      targetsByName.clear();
-      targetRoots.length = 0;
-      namesByObject.clear();
+      restoreHighlight();
+      for (const target of artifactTargets) interactionRegistry.unregister(target.root, target);
       hoveredTargetRef.current = null;
       onHoverChange?.(null);
     };
-  }, [onHoverChange, scene]);
+  }, [interactionRegistry, onHoverChange, scene]);
 
   const resolveTarget = (object: THREE.Object3D) => {
     let current: THREE.Object3D | null = object;
     while (current) {
-      const meshName = namesByObjectRef.current.get(current);
-      if (meshName) return targetsByNameRef.current.get(meshName) ?? null;
+      const target = interactionRegistry.targetsByRoot.get(current);
+      if (target) return target;
       current = current.parent;
     }
     return null;
   };
 
   const getCenterTarget = () => {
-    if (targetRootsRef.current.length === 0) return null;
+    if (interactionRegistry.roots.length === 0) return null;
 
     raycasterRef.current.far = MUSEUM_INTERACTION_DISTANCE;
     raycasterRef.current.setFromCamera(centerNdcRef.current, camera);
     const intersections = intersectionsRef.current;
     intersections.length = 0;
-    raycasterRef.current.intersectObjects(targetRootsRef.current, true, intersections);
+    raycasterRef.current.intersectObjects(interactionRegistry.roots, true, intersections);
 
     for (const intersection of intersections) {
       const target = resolveTarget(intersection.object);
@@ -180,40 +179,16 @@ export default function ObjectHighlighter({
     return null;
   };
 
-  const setHighlight = (target: InteractiveTarget | null) => {
-    const previousTarget = hoveredTargetRef.current;
-    if (previousTarget === target) return;
-
-    if (previousTarget) {
-      if (previousTarget.originalMaterial) {
-        previousTarget.highlightMesh.material = previousTarget.originalMaterial;
-      }
-      disposeOwnedMaterial(previousTarget.ownedHighlightMaterial);
-      previousTarget.originalMaterial = null;
-      previousTarget.ownedHighlightMaterial = null;
-    }
-
-    if (target && !target.originalMaterial) {
-      target.originalMaterial = target.highlightMesh.material;
-      target.ownedHighlightMaterial = createHighlightMaterial(target.highlightMesh.material);
-      target.highlightMesh.material = target.ownedHighlightMaterial;
-    }
-
-    hoveredTargetRef.current = target;
-    onHoverChange?.(target?.meshName ?? null);
-  };
-
   useEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
-      if (!inputEnabled) return;
-      if (!(event.target instanceof HTMLCanvasElement)) return;
+      if (!inputEnabled || !(event.target instanceof HTMLCanvasElement)) return;
       const target = hoveredTargetRef.current;
-      if (target) onObjectClick?.(target.meshName);
+      if (target) onTargetClick?.(target);
     };
 
     window.addEventListener('pointerdown', handlePointerDown, { capture: true });
     return () => window.removeEventListener('pointerdown', handlePointerDown, true);
-  }, [inputEnabled, onObjectClick]);
+  }, [inputEnabled, onTargetClick]);
 
   useFrame(() => {
     if (!inputEnabled) {
