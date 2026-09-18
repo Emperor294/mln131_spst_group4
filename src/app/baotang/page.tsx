@@ -1,9 +1,5 @@
-import MuseumExplorerScene from "@/features/game/GameModel";
+import MuseumExperienceGate from "@/features/museum/components/MuseumExperienceGate";
 
 export default function Baotang() {
-  return (
-    <div>
-        <MuseumExplorerScene />
-    </div>
-  );
+  return <MuseumExperienceGate />;
 }
