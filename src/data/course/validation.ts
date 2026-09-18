@@ -17,6 +17,7 @@ import type {
   ChapterId,
   LearningSection,
   LessonId,
+  MuseumZoneId,
   PageRange,
   ScopedSourceReference,
   ScopedSourceReferenceId,
@@ -258,8 +259,42 @@ export function getCourseDataIntegrityIssues(): string[] {
     }
   }
 
+  if (MUSEUM_ZONES.length !== 7) issues.push("MUSEUM_ZONES phải có đúng 7 zone canonical.");
+  const museumZoneIds = new Set<MuseumZoneId>();
+  const museumZoneChapters = new Set<ChapterId>();
+  const expectedMuseumZoneIds: readonly MuseumZoneId[] = [
+    "museum-zone-01",
+    "museum-zone-02",
+    "museum-zone-03",
+    "museum-zone-04",
+    "museum-zone-05",
+    "museum-zone-06",
+    "museum-zone-07",
+  ];
   for (const zone of MUSEUM_ZONES) {
+    if (museumZoneIds.has(zone.id)) issues.push(`Museum zone ID bị trùng: ${zone.id}`);
+    museumZoneIds.add(zone.id);
     if (!chapterIds.has(zone.chapterId)) issues.push(`Museum zone ${zone.id} tham chiếu chapter không tồn tại: ${zone.chapterId}`);
+    if (museumZoneChapters.has(zone.chapterId)) issues.push(`Chapter có museum zone bị trùng: ${zone.chapterId}`);
+    museumZoneChapters.add(zone.chapterId);
+    if (zone.order < 1 || zone.order > 7 || expectedMuseumZoneIds[zone.order - 1] !== zone.id) {
+      issues.push(`Museum zone ${zone.id} phải có order khớp với thứ tự canonical 1–7.`);
+    }
+    if ((zone.conceptIds as readonly unknown[]).length === 0) issues.push(`Museum zone ${zone.id} phải có ít nhất một concept.`);
+    for (const reference of zone.sourceRefs) {
+      validateScopedReference(reference, sourceIds, issues, `Museum zone ${zone.id}`);
+    }
+    if (zone.contentStatus === "verified" && zone.sourceRefs.length === 0) {
+      issues.push(`Museum zone ${zone.id} verified phải có sourceRefs.`);
+    }
+  }
+  if (museumZoneChapters.size !== 7) issues.push("Mỗi chapter phải được liên kết với đúng một museum zone.");
+  for (const chapter of COURSE_CHAPTERS) {
+    const zone = MUSEUM_ZONES.find((item) => item.chapterId === chapter.id);
+    if (!zone) continue;
+    if (chapter.museumZoneId !== zone.id) {
+      issues.push(`${chapter.id} có museumZoneId không khớp zone canonical: ${chapter.museumZoneId}`);
+    }
   }
 
   if (COURSE_LESSONS.length !== 21) issues.push("COURSE_LESSONS phải có đúng 21 lesson.");
@@ -327,10 +362,36 @@ export function getCourseDataIntegrityIssues(): string[] {
     for (const reference of artifact.sourceRefs ?? []) validateScopedReference(reference, sourceIds, issues, `Artifact ${artifact.id}`);
   }
 
-  if (MUSEUM_CONCEPTS.length !== 7) issues.push("MUSEUM_CONCEPTS phải có đúng 7 concept.");
+  const museumConceptIds = new Set<string>();
   for (const concept of MUSEUM_CONCEPTS) {
+    if (museumConceptIds.has(concept.id)) issues.push(`Museum concept ID bị trùng: ${concept.id}`);
+    museumConceptIds.add(concept.id);
     if (!chapterIds.has(concept.chapterId)) issues.push(`Museum concept ${concept.id} tham chiếu chapter không tồn tại: ${concept.chapterId}`);
+    if ((concept.lessonIds as readonly unknown[]).length === 0) issues.push(`Museum concept ${concept.id} phải tham chiếu ít nhất một lesson.`);
+    for (const lessonId of concept.lessonIds) {
+      const lesson = COURSE_LESSONS.find((item) => item.id === lessonId);
+      if (!lesson) {
+        issues.push(`Museum concept ${concept.id} tham chiếu lesson không tồn tại: ${lessonId}`);
+      } else if (lesson.chapterId !== concept.chapterId) {
+        issues.push(`Museum concept ${concept.id} tham chiếu lesson khác chapter: ${lessonId}`);
+      }
+    }
     for (const reference of concept.sourceRefs) validateScopedReference(reference, sourceIds, issues, `Museum concept ${concept.id}`);
+    if (concept.contentStatus === "verified") {
+      const hasTraceableTextbookReference = concept.sourceRefs.some(
+        (reference) => reference.sourceId === MLN131_TEXTBOOK_SOURCE_ID && Boolean(reference.bookPages),
+      );
+      if (!hasTraceableTextbookReference) {
+        issues.push(`Museum concept ${concept.id} verified phải có sourceRefs giáo trình.`);
+      }
+    }
+  }
+  for (const zone of MUSEUM_ZONES) {
+    for (const conceptId of zone.conceptIds) {
+      if (!museumConceptIds.has(conceptId)) {
+        issues.push(`Museum zone ${zone.id} tham chiếu concept không tồn tại: ${conceptId}`);
+      }
+    }
   }
 
   const allianceNodeIds = new Set<string>();

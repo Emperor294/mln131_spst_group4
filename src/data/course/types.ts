@@ -1,12 +1,35 @@
 export type ContentStatus = "placeholder" | "draft" | "verified";
 
 export type ChapterId = `chapter-${"01" | "02" | "03" | "04" | "05" | "06" | "07"}`;
-export type MuseumZoneId = `zone-${"01" | "02" | "03" | "04" | "05" | "06" | "07"}`;
+export type MuseumZoneId = `museum-zone-${"01" | "02" | "03" | "04" | "05" | "06" | "07"}`;
 export type LessonId = `ch${"01" | "02" | "03" | "04" | "05" | "06" | "07"}-lesson-${"01" | "02" | "03"}`;
 export type ArtifactId = `artifact-${string}`;
 export type LearningSectionId = `section-${string}`;
 export type AcademicSourceId = "mln131-textbook-2021" | `source-${string}`;
 export type ScopedSourceReferenceId = `ref-${string}`;
+export type MuseumConceptId = `museum-concept-${string}`;
+
+export type MuseumVisualizationType =
+  | "timeline"
+  | "network"
+  | "comparison"
+  | "sequence"
+  | "relationship"
+  | "concept-display"
+  | "artifact-story"
+  | "diagram"
+  | "environmental";
+
+export type MuseumInteractionType =
+  | "observe"
+  | "inspect"
+  | "activate"
+  | "compare"
+  | "sequence"
+  | "connect"
+  | "reveal";
+
+export type MuseumImplementationStatus = "planned" | "prototype" | "implemented";
 
 export type SourceType =
   | "textbook"
@@ -211,9 +234,15 @@ export interface MuseumZone {
   id: MuseumZoneId;
   chapterId: ChapterId;
   order: number;
+  shortTitle: string;
   title: string;
+  learningGoal: string;
   description: string;
-  status: ContentStatus;
+  conceptIds: readonly MuseumConceptId[];
+  suggestedExperience: string;
+  sourceRefs: readonly ScopedSourceReference[];
+  contentStatus: ContentStatus;
+  implementationStatus: MuseumImplementationStatus;
 }
 
 export interface ArtifactImage {
@@ -262,10 +291,14 @@ export interface LessonAcademicContent {
 }
 
 export interface MuseumConcept {
-  id: `museum-concept-${string}`;
+  id: MuseumConceptId;
   chapterId: ChapterId;
+  lessonIds: readonly LessonId[];
   title: string;
-  suggestedVisualization: string;
+  summary: string;
+  visualizationType: MuseumVisualizationType;
+  suggestedInteraction: MuseumInteractionType;
   sourceRefs: readonly ScopedSourceReference[];
-  status: ContentStatus;
+  contentStatus: ContentStatus;
+  implementationStatus: MuseumImplementationStatus;
 }
