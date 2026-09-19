@@ -6,7 +6,8 @@ import { EMPTY_PROGRESS, loadLocalProgress, saveLocalProgress, clearLocalProgres
 
 interface AssessmentProgressContextValue {
   progress: AssessmentProgressState;
-  saveAttempt: (attempt: QuizAttempt) => void;
+  saveAttempt: (attempt: QuizAttempt) => boolean;
+  persistenceError: boolean;
   clearProgress: () => void;
 }
 
@@ -14,33 +15,38 @@ const AssessmentProgressContext = createContext<AssessmentProgressContextValue |
 
 export default function AssessmentProgressProvider({ children }: { children: React.ReactNode }) {
   const [progress, setProgress] = useState<AssessmentProgressState>(EMPTY_PROGRESS);
+  const [persistenceError, setPersistenceError] = useState(false);
 
   useEffect(() => {
     setProgress(loadLocalProgress());
   }, []);
 
   const saveAttempt = useCallback((attempt: QuizAttempt) => {
-    setProgress((current) => {
-      const existingAttempt = current.attempts.find((item) => item.id === attempt.id);
-      if (existingAttempt?.submittedAt) return current;
+    const existingAttempt = progress.attempts.find((item) => item.id === attempt.id);
+    if (existingAttempt?.submittedAt) return true;
 
-      const next: AssessmentProgressState = {
-        ...current,
-        attempts: current.attempts.some((item) => item.id === attempt.id)
-          ? current.attempts.map((item) => item.id === attempt.id ? attempt : item)
-          : [...current.attempts, attempt],
-      };
-      saveLocalProgress(next);
-      return next;
-    });
-  }, []);
+    const next: AssessmentProgressState = {
+      ...progress,
+      attempts: progress.attempts.some((item) => item.id === attempt.id)
+        ? progress.attempts.map((item) => item.id === attempt.id ? attempt : item)
+        : [...progress.attempts, attempt],
+    };
+    const didPersist = saveLocalProgress(next);
+    setProgress(next);
+    setPersistenceError(!didPersist);
+    return didPersist;
+  }, [progress]);
 
   const clearProgress = useCallback(() => {
     clearLocalProgress();
     setProgress(EMPTY_PROGRESS);
+    setPersistenceError(false);
   }, []);
 
-  const value = useMemo(() => ({ progress, saveAttempt, clearProgress }), [progress, saveAttempt, clearProgress]);
+  const value = useMemo(
+    () => ({ progress, saveAttempt, persistenceError, clearProgress }),
+    [progress, saveAttempt, persistenceError, clearProgress],
+  );
   return <AssessmentProgressContext.Provider value={value}>{children}</AssessmentProgressContext.Provider>;
 }
 

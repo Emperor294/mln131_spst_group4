@@ -7,6 +7,7 @@ import type { ScopedSourceReference } from "../types";
 import { QUIZ_QUESTIONS } from "./questions";
 import { COURSE_QUIZZES } from "./quizzes";
 import type { QuizQuestion } from "./types";
+import { gradeQuiz } from "@/features/assessment/grading/grade-quiz";
 
 function hasText(value: string): boolean {
   return value.trim().length > 0;
@@ -246,6 +247,56 @@ export function getAssessmentDataIssues(): string[] {
       if ((lessonCounts.get(lesson.id) ?? 0) < 2) {
         issues.push(`Quiz ${quiz.id} phải có ít nhất 2 question cho ${lesson.id}.`);
       }
+    }
+  }
+
+  issues.push(...getAssessmentGradingIssues());
+
+  return issues;
+}
+
+export function getAssessmentGradingIssues(): string[] {
+  const issues: string[] = [];
+
+  for (const quiz of COURSE_QUIZZES) {
+    const questions = quiz.questionIds
+      .map((questionId) => QUIZ_QUESTIONS.find((question) => question.id === questionId))
+      .filter((question): question is QuizQuestion => question !== undefined);
+    if (questions.length !== quiz.questionIds.length || questions.length === 0) continue;
+
+    const correctAnswers = questions.map((question) => ({
+      questionId: question.id,
+      selectedOptionIds: getCorrectOptionIds(question),
+    }));
+    const wrongAnswers = questions.map((question) => ({
+      questionId: question.id,
+      selectedOptionIds: question.options
+        .map((option) => option.id)
+        .filter((optionId) => !getCorrectOptionIds(question).includes(optionId))
+        .slice(0, 1),
+    }));
+    const oneCorrectAnswers = questions.map((question, index) => ({
+      questionId: question.id,
+      selectedOptionIds: index === 0
+        ? getCorrectOptionIds(question)
+        : question.options
+          .map((option) => option.id)
+          .filter((optionId) => !getCorrectOptionIds(question).includes(optionId))
+          .slice(0, 1),
+    }));
+
+    const allCorrect = gradeQuiz(quiz, questions, correctAnswers);
+    const allWrong = gradeQuiz(quiz, questions, wrongAnswers);
+    const oneCorrect = gradeQuiz(quiz, questions, oneCorrectAnswers);
+
+    if (allCorrect.correctCount !== questions.length || allCorrect.percentage !== 100) {
+      issues.push(`Grading synthetic all-correct thất bại cho ${quiz.id}.`);
+    }
+    if (allWrong.correctCount !== 0 || allWrong.percentage !== 0) {
+      issues.push(`Grading synthetic all-wrong thất bại cho ${quiz.id}.`);
+    }
+    if (oneCorrect.correctCount !== 1 || oneCorrect.totalQuestions !== questions.length) {
+      issues.push(`Grading synthetic one-correct thất bại cho ${quiz.id}.`);
     }
   }
 

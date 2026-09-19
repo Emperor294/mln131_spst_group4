@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SITE_CONFIG } from "@/config/site";
 import {
@@ -6,6 +7,7 @@ import {
   COURSE_CHAPTERS,
   getChapterById,
 } from "@/data/course";
+import { getQuizByChapterId, getQuizQuestionById } from "@/data/course/assessment";
 import AllianceMap from "@/features/course/chapter-five/AllianceMap";
 import ChapterHero from "@/features/course/components/ChapterHero";
 import ChapterLearningContent from "@/features/course/components/ChapterLearningContent";
@@ -42,6 +44,12 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   if (!chapter) notFound();
 
   const hasReviewedOverview = chapter.status !== "placeholder" && !chapter.description.startsWith("[");
+  const quiz = getQuizByChapterId(chapter.id);
+  const quizAvailable = Boolean(
+    quiz?.status === "available"
+      && quiz.questionIds.length > 0
+      && quiz.questionIds.every((questionId) => getQuizQuestionById(questionId)),
+  );
 
   return (
     <article className="chapter-page">
@@ -74,6 +82,18 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
         <ChapterLearningContent lessons={chapter.lessons} />
         {chapter.id === "chapter-05" && <AllianceMap />}
         <RelatedArtifacts chapterId={chapter.id} />
+        {quizAvailable && quiz && (
+          <section className="chapter-quiz-cta" aria-labelledby="chapter-quiz-cta-title">
+            <div>
+              <p className="course-eyebrow">Luyện tập sau bài học</p>
+              <h2 id="chapter-quiz-cta-title">Củng cố nội dung chương</h2>
+              <p>{quiz.questionIds.length} câu hỏi trắc nghiệm, có giải thích và nguồn giáo trình sau khi nộp bài.</p>
+            </div>
+            <Link href={`/chapters/${chapter.id}/quiz`} className="quiz-button quiz-button--primary">
+              Luyện tập chương →
+            </Link>
+          </section>
+        )}
         <SourceList sourceRefs={chapter.sourceRefs} />
         <ChapterNavigation chapter={chapter} />
       </div>

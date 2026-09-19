@@ -95,4 +95,8 @@ correct option, a source-grounded explanation, and narrow canonical textbook
 references. All three lessons in every chapter are represented. Distractors
 avoid “all of the above”, stereotypes, and current-affairs claims. The route
 shell reports question availability but does not expose the interactive player;
-that player and submission UX are deferred to Phase 5C.
+that player and submission UX are implemented in Phase 5C through the client
+`QuizPlayer`. Draft answers remain in session state until submission; submitted
+attempts are graded by `gradeQuiz`, persisted anonymously, and rendered with
+canonical explanations and source references. No pass/fail threshold is shown
+while `passingScore` remains unset.
