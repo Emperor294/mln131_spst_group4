@@ -8,6 +8,8 @@ import { QUIZ_QUESTIONS } from "./questions";
 import { COURSE_QUIZZES } from "./quizzes";
 import type { QuizQuestion } from "./types";
 import { gradeQuiz } from "@/features/assessment/grading/grade-quiz";
+import { getProgressSelectorFixtureIssues } from "@/features/assessment/progress/summaries";
+import { getProgressRepositoryFixtureIssues } from "@/features/assessment/progress/storage";
 
 function hasText(value: string): boolean {
   return value.trim().length > 0;
@@ -251,6 +253,8 @@ export function getAssessmentDataIssues(): string[] {
   }
 
   issues.push(...getAssessmentGradingIssues());
+  issues.push(...getProgressSelectorFixtureIssues(COURSE_CHAPTERS, COURSE_QUIZZES));
+  issues.push(...getProgressRepositoryFixtureIssues());
 
   return issues;
 }

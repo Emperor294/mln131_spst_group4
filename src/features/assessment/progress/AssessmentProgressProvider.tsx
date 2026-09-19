@@ -2,10 +2,12 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { AssessmentProgressState, QuizAttempt } from "@/data/course/assessment";
-import { EMPTY_PROGRESS, loadLocalProgress, saveLocalProgress, clearLocalProgress } from "./storage";
+import { EMPTY_PROGRESS, isLocalProgressStorageAvailable, loadLocalProgress, saveLocalProgress, clearLocalProgress } from "./storage";
 
 interface AssessmentProgressContextValue {
   progress: AssessmentProgressState;
+  /** True after the browser-local envelope has been read. */
+  isHydrated: boolean;
   saveAttempt: (attempt: QuizAttempt) => boolean;
   persistenceError: boolean;
   clearProgress: () => void;
@@ -15,10 +17,13 @@ const AssessmentProgressContext = createContext<AssessmentProgressContextValue |
 
 export default function AssessmentProgressProvider({ children }: { children: React.ReactNode }) {
   const [progress, setProgress] = useState<AssessmentProgressState>(EMPTY_PROGRESS);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [persistenceError, setPersistenceError] = useState(false);
 
   useEffect(() => {
     setProgress(loadLocalProgress());
+    setPersistenceError(!isLocalProgressStorageAvailable());
+    setIsHydrated(true);
   }, []);
 
   const saveAttempt = useCallback((attempt: QuizAttempt) => {
@@ -44,8 +49,8 @@ export default function AssessmentProgressProvider({ children }: { children: Rea
   }, []);
 
   const value = useMemo(
-    () => ({ progress, saveAttempt, persistenceError, clearProgress }),
-    [progress, saveAttempt, persistenceError, clearProgress],
+    () => ({ progress, isHydrated, saveAttempt, persistenceError, clearProgress }),
+    [progress, isHydrated, saveAttempt, persistenceError, clearProgress],
   );
   return <AssessmentProgressContext.Provider value={value}>{children}</AssessmentProgressContext.Provider>;
 }

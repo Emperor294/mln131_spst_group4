@@ -31,6 +31,17 @@ function getBrowserStorage(): Storage | null {
   }
 }
 
+export function isLocalProgressStorageAvailable(): boolean {
+  const storage = getBrowserStorage();
+  if (!storage) return false;
+  try {
+    storage.getItem(PROGRESS_STORAGE_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -136,4 +147,35 @@ export function saveLocalProgress(state: AssessmentProgressState): boolean {
 
 export function clearLocalProgress(): void {
   createLocalProgressRepository().clear();
+}
+
+/** Build-time checks for save/load/clear behavior using an in-memory Storage double. */
+export function getProgressRepositoryFixtureIssues(): string[] {
+  let raw: string | null = null;
+  const storage = {
+    getItem: () => raw,
+    setItem: (_key: string, value: string) => { raw = value; },
+    removeItem: () => { raw = null; },
+  } as unknown as Storage;
+  const repository = createLocalProgressRepository(storage);
+  const fixture: AssessmentProgressState = {
+    ...EMPTY_PROGRESS,
+    attempts: [{
+      id: "storage-fixture-attempt",
+      quizId: "quiz-ch01",
+      startedAt: "2026-09-19T08:00:00Z",
+      submittedAt: "2026-09-19T08:05:00Z",
+      answers: [],
+      score: 0.5,
+      correctCount: 4,
+      totalQuestions: 8,
+    }],
+  };
+  const issues: string[] = [];
+  if (!repository.save(fixture) || repository.load().attempts.length !== 1) {
+    issues.push("progress repository save/load fixture failed");
+  }
+  repository.clear();
+  if (repository.load().attempts.length !== 0) issues.push("progress repository clear fixture failed");
+  return issues;
 }

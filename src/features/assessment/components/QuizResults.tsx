@@ -65,6 +65,7 @@ export default function QuizResults({ chapter, quiz, questions, grade, attempt, 
           </button>
           <button type="button" className="quiz-button quiz-button--secondary" onClick={onRetake}>Làm lại</button>
           <Link href={`/chapters/${chapter.id}`} className="quiz-button quiz-button--secondary">Quay về chương</Link>
+          <Link href="/progress" className="quiz-button quiz-button--secondary">Xem tiến độ luyện tập</Link>
         </div>
       </div>
 

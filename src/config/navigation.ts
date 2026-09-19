@@ -18,6 +18,7 @@ export interface RouteStrategy {
 export const PRIMARY_NAVIGATION = [
   { label: "Trang chủ", href: "/" },
   { label: "Khám phá", href: "/chapters" },
+  { label: "Tiến độ", href: "/progress" },
   { label: "Bảo tàng 3D", href: "/baotang" },
   { label: "Học liệu", href: "/video" },
 ] as const satisfies readonly NavigationItem[];
