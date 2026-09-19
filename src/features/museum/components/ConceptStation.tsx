@@ -4,10 +4,10 @@ import { Html } from '@react-three/drei';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import type { MuseumConceptStation } from '../data/concept-stations';
-import { getMuseumZoneAccent } from '../data/spatial-zones';
 import type { MuseumInteractionRegistry, MuseumInteractionTarget } from '../runtime/interaction-registry';
 import { ACADEMIC_STATION_INTERACTION_DISTANCE } from '../runtime/museum-geometry';
 import AcademicExhibitLayer from './AcademicExhibitLayer';
+import { MUSEUM_VISUAL_THEME, getMuseumVisualAccent } from '../theme/museum-visual-theme';
 
 interface ConceptStationProps {
   station: MuseumConceptStation;
@@ -20,7 +20,7 @@ export default function ConceptStation({ station, zoneNumber, registry }: Concep
   const highlightMeshRef = useRef<THREE.Mesh>(null);
   const targetRef = useRef<MuseumInteractionTarget | null>(null);
   const isAlliance = station.variant === 'alliance';
-  const accent = isAlliance ? '#c76c53' : getMuseumZoneAccent(station.zoneId);
+  const accent = isAlliance ? MUSEUM_VISUAL_THEME.colors.interaction : getMuseumVisualAccent(station.zoneId);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -48,15 +48,15 @@ export default function ConceptStation({ station, zoneNumber, registry }: Concep
       <AcademicExhibitLayer station={station} />
       <mesh ref={highlightMeshRef} position={[0, 0.58, 0]}>
         <boxGeometry args={[0.68, 0.96, 0.18]} />
-        <meshStandardMaterial color="#283043" emissive={accent} emissiveIntensity={0.12} roughness={0.5} metalness={0.18} />
+        <meshStandardMaterial color={MUSEUM_VISUAL_THEME.colors.exhibitSurface} emissive={accent} emissiveIntensity={0.08} roughness={0.74} metalness={0.08} />
       </mesh>
       <mesh position={[0, 0.08, 0]}>
         <cylinderGeometry args={[0.46, 0.58, 0.16, 20]} />
-        <meshStandardMaterial color="#101425" roughness={0.72} metalness={0.22} />
+        <meshStandardMaterial color={MUSEUM_VISUAL_THEME.colors.architecture} roughness={0.84} metalness={0.04} />
       </mesh>
       <mesh position={[0, 1.09, 0]}>
         <boxGeometry args={[0.3, 0.04, 0.04]} />
-        <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.35} />
+        <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.22} />
       </mesh>
       {isAlliance && (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.18, 0]}>
@@ -67,11 +67,12 @@ export default function ConceptStation({ station, zoneNumber, registry }: Concep
       <Html center position={[0, 1.48, 0]} distanceFactor={5} style={{ pointerEvents: 'none' }}>
         <div
           aria-label={`${station.label}. Nhấn để khám phá.`}
-          className="museum-motion w-36 select-none border border-white/15 bg-[#101425]/88 px-2 py-1.5 text-center text-white shadow-lg backdrop-blur-sm"
+          className="museum-motion w-36 select-none border px-2 py-1.5 text-center text-white shadow-lg backdrop-blur-sm"
+          style={{ backgroundColor: 'rgba(11, 16, 32, 0.94)', borderColor: MUSEUM_VISUAL_THEME.colors.labelBorder }}
         >
-          <span className="block text-[9px] tracking-[0.2em] text-[#d3a06d]">{zoneNumber.toString().padStart(2, '0')}</span>
+          <span className="block text-[9px] tracking-[0.2em]" style={{ color: MUSEUM_VISUAL_THEME.colors.interaction }}>{zoneNumber.toString().padStart(2, '0')}</span>
           <strong className="mt-0.5 block text-[10px] font-medium tracking-[0.08em]">{station.label}</strong>
-          <span className="mt-1 block text-[9px] text-white/60">Nhấn để khám phá</span>
+          <span className="mt-1 block text-[9px] text-white/75">Nhấn để khám phá</span>
         </div>
       </Html>
     </group>

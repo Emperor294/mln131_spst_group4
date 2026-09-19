@@ -9,6 +9,7 @@ import {
   MUSEUM_PHYSICAL_OCCLUDERS,
   type MuseumLayoutStructure,
 } from '../data/museum-layout-v2';
+import { MUSEUM_VISUAL_THEME } from '../theme/museum-visual-theme';
 
 const DEBUG_QUERY = 'museumDebug';
 
@@ -56,11 +57,11 @@ function DebugStructure({ structure, geometry }: { structure: MuseumLayoutStruct
 function LobbyOrientation() {
   return (
     <Html center position={[0, 2.55, 3.0]} distanceFactor={5} style={{ pointerEvents: 'none' }}>
-      <div className="museum-motion w-64 select-none border border-white/20 bg-[#101425]/92 px-4 py-3 text-center text-white shadow-xl backdrop-blur-sm">
-        <p className="text-[10px] tracking-[0.3em] text-[#d3a06d]">SOCIALISM 360</p>
-        <p className="mt-1 text-[9px] uppercase tracking-[0.2em] text-white/60">Explore · Interact · Understand</p>
+      <div className="museum-motion w-64 select-none border border-white/20 px-4 py-3 text-center text-white shadow-xl backdrop-blur-sm" style={{ backgroundColor: 'rgba(11, 16, 32, 0.94)' }}>
+        <p className="text-[10px] tracking-[0.3em]" style={{ color: MUSEUM_VISUAL_THEME.colors.interaction }}>SOCIALISM 360</p>
+        <p className="mt-1 text-[9px] uppercase tracking-[0.2em] text-white/75">Explore · Interact · Understand</p>
         <div className="mt-3 grid grid-cols-7 gap-1 text-[10px] text-white/80" aria-label="Bảy khu vực học tập">
-          {Array.from({ length: 7 }, (_, index) => <span key={index} className="border border-white/15 px-1 py-1">{String(index + 1).padStart(2, '0')}</span>)}
+          {Array.from({ length: 7 }, (_, index) => <span key={index} className="border border-white/25 px-1 py-1">{String(index + 1).padStart(2, '0')}</span>)}
         </div>
       </div>
     </Html>
@@ -72,10 +73,10 @@ export default function MuseumArchitectureLayer() {
   const geometry = useMemo(() => new THREE.BoxGeometry(1, 1, 1), []);
   const materials = useMemo(() => {
     const map = new Map<string, THREE.MeshStandardMaterial>();
-    map.set('shell', new THREE.MeshStandardMaterial({ color: '#30394c', roughness: 0.82, metalness: 0.05 }));
-    map.set('alliance', new THREE.MeshStandardMaterial({ color: '#81463f', roughness: 0.76, metalness: 0.08 }));
+    map.set('shell', new THREE.MeshStandardMaterial({ color: MUSEUM_VISUAL_THEME.colors.architecture, ...MUSEUM_VISUAL_THEME.materials.architecture }));
+    map.set('alliance', new THREE.MeshStandardMaterial({ color: '#81463f', ...MUSEUM_VISUAL_THEME.materials.architectureSecondary }));
     for (const [zoneId, accent] of Object.entries(MUSEUM_ZONE_ACCENTS)) {
-      map.set(zoneId, new THREE.MeshStandardMaterial({ color: accent, roughness: 0.8, metalness: 0.04 }));
+      map.set(zoneId, new THREE.MeshStandardMaterial({ color: accent, ...MUSEUM_VISUAL_THEME.materials.accent }));
     }
     return map;
   }, []);

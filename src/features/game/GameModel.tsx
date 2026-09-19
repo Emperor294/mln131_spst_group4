@@ -1,8 +1,9 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { useGLTF, Sky, Html, useProgress } from '@react-three/drei';
+import { useGLTF, Html, useProgress } from '@react-three/drei';
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 import { getMuseumZoneById } from '@/data/course';
 import type { MuseumZoneId } from '@/data/course';
 import CharacterController from './CharacterController';
@@ -11,7 +12,9 @@ import Crosshair from './Crosshair';
 import MuseumObjectDialog from '../../components/ui/museum-object-dialog';
 import ConceptDialog from '@/features/museum/components/ConceptDialog';
 import MuseumArchitectureLayer from '@/features/museum/components/MuseumArchitectureLayer';
+import MuseumLighting from '@/features/museum/components/MuseumLighting';
 import MuseumZoneRuntime from '@/features/museum/components/MuseumZoneRuntime';
+import { MUSEUM_VISUAL_THEME } from '@/features/museum/theme/museum-visual-theme';
 import { getConceptStationById } from '@/features/museum/data/concept-stations';
 import { createMuseumInteractionRegistry } from '@/features/museum/runtime/interaction-registry';
 import type { MuseumInteractionRegistry, MuseumInteractionTarget } from '@/features/museum/runtime/interaction-registry';
@@ -56,7 +59,11 @@ function Floor() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
       <planeGeometry args={[50, 50]} />
-      <meshStandardMaterial color="#252333" roughness={0.86} metalness={0.08} />
+      <meshStandardMaterial
+        color={MUSEUM_VISUAL_THEME.colors.floor}
+        roughness={0.9}
+        metalness={0.04}
+      />
     </mesh>
   );
 }
@@ -66,8 +73,11 @@ function ZoneHud({ zoneId }: { zoneId: MuseumZoneId | null }) {
   if (!zone) return null;
 
   return (
-    <div className="museum-motion pointer-events-none absolute left-4 top-28 z-10 border-l-2 border-[#c76c53] bg-black/45 px-3 py-2 text-white backdrop-blur-sm transition-opacity duration-300">
-      <span className="block text-[10px] tracking-[0.2em] text-[#d3a06d]">ZONE {zone.order.toString().padStart(2, '0')}</span>
+    <div
+      className="museum-motion pointer-events-none absolute left-4 top-28 z-10 border-l-2 px-3 py-2 text-white shadow-lg backdrop-blur-sm transition-opacity duration-300"
+      style={{ backgroundColor: 'rgba(11, 16, 32, 0.9)', borderLeftColor: MUSEUM_VISUAL_THEME.colors.interaction }}
+    >
+      <span className="block text-[10px] tracking-[0.2em]" style={{ color: MUSEUM_VISUAL_THEME.colors.interaction }}>ZONE {zone.order.toString().padStart(2, '0')}</span>
       <strong className="mt-0.5 block text-xs font-medium tracking-[0.12em]">{zone.shortTitle}</strong>
     </div>
   );
@@ -79,11 +89,12 @@ function ZoneEntryToast({ zoneId, visible }: { zoneId: MuseumZoneId | null; visi
 
   return (
     <div
-      className={`museum-motion pointer-events-none fixed left-1/2 top-24 z-20 -translate-x-1/2 border border-white/15 bg-[#101425]/90 px-4 py-2 text-center text-white shadow-xl backdrop-blur-sm transition-[opacity,transform] duration-300 ${visible ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0'}`}
+      className={`museum-motion pointer-events-none fixed left-1/2 top-24 z-20 -translate-x-1/2 border border-white/20 px-4 py-2 text-center text-white shadow-xl backdrop-blur-sm transition-[opacity,transform] duration-300 ${visible ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0'}`}
+      style={{ backgroundColor: 'rgba(11, 16, 32, 0.94)' }}
       role="status"
       aria-live="polite"
     >
-      <span className="block text-[10px] tracking-[0.24em] text-[#d3a06d]">ZONE {zone.order.toString().padStart(2, '0')}</span>
+      <span className="block text-[10px] tracking-[0.24em]" style={{ color: MUSEUM_VISUAL_THEME.colors.interaction }}>ZONE {zone.order.toString().padStart(2, '0')}</span>
       <strong className="mt-0.5 block text-xs font-medium tracking-[0.12em]">{zone.shortTitle}</strong>
     </div>
   );
@@ -94,7 +105,7 @@ function InteractionPrompt({ target }: { target: MuseumInteractionTarget | null 
 
   const label = target.kind === 'concept-station' ? 'Khám phá' : 'Xem hiện vật';
   return (
-    <div aria-live="polite" className="museum-motion pointer-events-none fixed left-1/2 top-[56%] z-20 -translate-x-1/2 rounded-full border border-white/20 bg-black/60 px-3 py-1.5 text-xs text-white/85 shadow-lg backdrop-blur-sm transition-transform duration-150">
+    <div aria-live="polite" className="museum-motion pointer-events-none fixed left-1/2 top-[56%] z-20 -translate-x-1/2 rounded-full border px-3 py-1.5 text-xs font-medium shadow-lg backdrop-blur-sm transition-transform duration-150" style={{ backgroundColor: 'rgba(11, 16, 32, 0.94)', borderColor: MUSEUM_VISUAL_THEME.colors.interaction, color: MUSEUM_VISUAL_THEME.colors.labelText }}>
       {label}
     </div>
   );
@@ -102,8 +113,8 @@ function InteractionPrompt({ target }: { target: MuseumInteractionTarget | null 
 
 function MuseumOnboarding({ onDismiss }: { onDismiss: () => void }) {
   return (
-    <div className="absolute left-4 top-4 z-30 w-[min(19rem,calc(100vw-2rem))] border border-white/15 bg-[#101425]/92 p-4 text-white shadow-2xl backdrop-blur-sm" role="dialog" aria-label="Hướng dẫn khám phá bảo tàng">
-      <p className="text-[10px] uppercase tracking-[0.28em] text-[#d3a06d]">SOCIALISM 360</p>
+    <div className="absolute left-4 top-4 z-30 w-[min(19rem,calc(100vw-2rem))] border border-white/20 p-4 text-white shadow-2xl backdrop-blur-sm" style={{ backgroundColor: 'rgba(11, 16, 32, 0.96)' }} role="dialog" aria-label="Hướng dẫn khám phá bảo tàng">
+      <p className="text-[10px] uppercase tracking-[0.28em]" style={{ color: MUSEUM_VISUAL_THEME.colors.interaction }}>SOCIALISM 360</p>
       <h1 className="mt-2 text-lg font-medium tracking-tight">Bước vào không gian học tập</h1>
       <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-white/75">
         <span><strong className="text-white">WASD</strong><br />Di chuyển</span>
@@ -111,11 +122,12 @@ function MuseumOnboarding({ onDismiss }: { onDismiss: () => void }) {
         <span><strong className="text-white">Chuột</strong><br />Quan sát / tương tác</span>
         <span><strong className="text-white">Esc</strong><br />Thoát con trỏ</span>
       </div>
-      <p className="mt-3 text-xs leading-5 text-white/55">Nhấn vào không gian để bắt đầu khám phá.</p>
+      <p className="mt-3 text-xs leading-5 text-white/75">Nhấn vào không gian để bắt đầu khám phá.</p>
       <button
         type="button"
         onClick={onDismiss}
-        className="mt-3 rounded-full border border-[#c76c53]/70 px-3 py-1.5 text-xs text-white transition hover:bg-[#c76c53]/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d3a06d]"
+        className="mt-3 rounded-full border px-3 py-1.5 text-xs text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2"
+        style={{ borderColor: MUSEUM_VISUAL_THEME.colors.interaction, outlineColor: MUSEUM_VISUAL_THEME.colors.interaction }}
       >
         Đã hiểu
       </button>
@@ -189,25 +201,14 @@ export default function MuseumExplorerScene() {
       <Canvas
         dpr={[1, 1.5]}
         shadows={false}
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = MUSEUM_VISUAL_THEME.lighting.exposure;
+        }}
         style={{ pointerEvents: dialogOpen ? 'none' : 'auto' }}
       >
         <Suspense fallback={<LoaderOverlayCanvas />}>
-          <Sky
-            distance={450000}
-            sunPosition={[0, 1, 0]}
-            inclination={0.49}
-            azimuth={0.25}
-            turbidity={20}
-            rayleigh={0.5}
-            mieCoefficient={0.005}
-            mieDirectionalG={0.8}
-          />
-
-          <ambientLight intensity={0.34} color="#9aa6c2" />
-          <directionalLight position={[5, 10, 5]} intensity={1.45} color="#d5aa86" />
-          <directionalLight position={[-3, 5, 3]} intensity={0.62} color="#8fa7c6" />
-          <directionalLight position={[0, 2, -8]} intensity={0.42} color="#ad7771" />
-          <pointLight position={[0, 3, 0]} intensity={0.72} color="#d19a7a" distance={20} decay={2} />
+          <MuseumLighting />
 
           <Floor />
           <MuseumModel />

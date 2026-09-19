@@ -10,6 +10,7 @@ import {
   findMuseumCollisionMeshes,
   LEGACY_ARTIFACT_INTERACTION_DISTANCE,
 } from '@/features/museum/runtime/museum-geometry';
+import { MUSEUM_VISUAL_THEME } from '@/features/museum/theme/museum-visual-theme';
 
 type Props = {
   inputEnabled?: boolean;
@@ -54,10 +55,10 @@ function findFirstMesh(object: THREE.Object3D): THREE.Mesh | null {
 function createHighlightMaterial(material: THREE.Material | THREE.Material[]) {
   const highlight = (source: THREE.Material) => {
     const clone = source.clone();
-    if (hasColor(clone)) clone.color.setHex(0xff6b6b);
+    if (hasColor(clone)) clone.color.set(MUSEUM_VISUAL_THEME.colors.interaction);
     if (hasEmissive(clone)) {
-      clone.emissive.setHex(0xff6b6b);
-      clone.emissiveIntensity = Math.max(clone.emissiveIntensity, 0.15);
+      clone.emissive.set(MUSEUM_VISUAL_THEME.colors.interaction);
+      clone.emissiveIntensity = Math.min(0.4, Math.max(clone.emissiveIntensity, 0.12));
     }
     return clone;
   };

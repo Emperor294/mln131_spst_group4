@@ -17,8 +17,10 @@ Implemented in `museum-layout-v2.ts` and `MuseumArchitectureLayer`:
 - static grid reachability validation for all seven zone entries and 17 stations;
 - `?museumDebug=1` development layout markers.
 
-The academic exhibit layer is now implemented in Phase 6D. Final lighting,
-materials, atmosphere, and release validation remain deferred to Phase 6E/6F.
+The academic exhibit layer is implemented in Phase 6D. The Phase 6E visual
+system is now implemented through `MuseumLighting` and the centralized museum
+visual theme. Runtime profiling, deployment verification, and final technical
+freeze remain deferred to Phase 6F.
 
 ## Phase 6D academic exhibit status
 
@@ -37,6 +39,20 @@ Implemented in `academic-exhibits.ts` and `AcademicExhibitLayer`:
 
 Phase 6D does not change canonical academic data, ConceptDialog, interaction
 root counts, collision, occlusion, the GLB, or the lightweight mobile fallback.
+
+## Phase 6E visual system status
+
+Implemented in `museum-visual-theme.ts` and `MuseumLighting`:
+
+- a centralized three-light, no-shadow museum rig;
+- local procedural Sky with centralized ACES exposure;
+- matte architecture materials and brighter academic exhibit materials;
+- existing zone accents reused without a second palette;
+- stronger label, HUD, prompt, onboarding, and signage contrast;
+- restrained warm interaction highlighting;
+- no bloom, fog, SSAO, depth of field, external HDR, or new asset requests.
+
+The final 3D technical audit and performance/deployment freeze remain Phase 6F.
 
 ## Recommendation
 
@@ -228,9 +244,9 @@ qa-zone05-alliance-close, qa-zone06, qa-zone07, and qa-station-close. These are
 review viewpoints only; they must not alter the production spawn or camera
 controls.
 
-## Phase 6D → 6E handoff
+## Phase 6E → 6F handoff
 
-Before final lighting and atmosphere are authored:
+Before technical freeze:
 
 1. run the physical-layout static validation;
 2. verify the 7/7 zone-entry and 17/17 station reachability result;
@@ -238,7 +254,6 @@ Before final lighting and atmosphere are authored:
 4. verify movement, collision, occlusion, all nine artifact roots, and all 17
    procedural stations;
 5. keep the GLB validator and protected-node baseline unchanged;
-6. preserve the open circulation model while visually reviewing the new
-   source-grounded exhibit geometry;
-7. keep final material, lighting, atmosphere, and legacy de-emphasis decisions
-   in Phase 6E.
+6. preserve the open circulation model while reviewing the final visual system;
+7. run runtime profiling, network/deployment verification, and final 3D
+   regression checks in Phase 6F.

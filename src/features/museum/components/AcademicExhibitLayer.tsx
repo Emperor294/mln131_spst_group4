@@ -10,6 +10,7 @@ import {
   type AcademicExhibitVariant,
 } from '../data/academic-exhibits';
 import type { MuseumConceptStation } from '../data/concept-stations';
+import { MUSEUM_VISUAL_THEME, getMuseumVisualAccent } from '../theme/museum-visual-theme';
 
 const DEBUG_QUERY = 'museumDebug';
 
@@ -40,12 +41,12 @@ export function AcademicExhibitProvider({ children }: { children: ReactNode }) {
   const debug = useMuseumDebugFlag();
   const resources = useMemo<AcademicExhibitResources>(() => {
     const materials = new Map<string, THREE.MeshStandardMaterial>();
-    materials.set('surface', createMaterial('#263047', 0.82, 0.04));
-    materials.set('neutral', createMaterial('#c0ad8b', 0.8, 0.03));
-    materials.set('line', createMaterial('#8295b6', 0.75, 0.04));
+    materials.set('surface', createMaterial(MUSEUM_VISUAL_THEME.colors.exhibitSurface, MUSEUM_VISUAL_THEME.materials.exhibit.roughness, MUSEUM_VISUAL_THEME.materials.exhibit.metalness));
+    materials.set('neutral', createMaterial(MUSEUM_VISUAL_THEME.colors.exhibitNeutral, MUSEUM_VISUAL_THEME.materials.exhibit.roughness, MUSEUM_VISUAL_THEME.materials.exhibit.metalness));
+    materials.set('line', createMaterial(MUSEUM_VISUAL_THEME.colors.exhibitLine, MUSEUM_VISUAL_THEME.materials.exhibit.roughness, MUSEUM_VISUAL_THEME.materials.exhibit.metalness));
     materials.set('alliance', createMaterial('#c76c53', 0.76, 0.06));
-    for (const [zoneId, accent] of Object.entries(MUSEUM_ZONE_ACCENTS)) {
-      materials.set(`accent:${zoneId}`, createMaterial(accent, 0.78, 0.04));
+    for (const zoneId of Object.keys(MUSEUM_ZONE_ACCENTS)) {
+      materials.set(`accent:${zoneId}`, createMaterial(getMuseumVisualAccent(zoneId as keyof typeof MUSEUM_ZONE_ACCENTS), MUSEUM_VISUAL_THEME.materials.accent.roughness, MUSEUM_VISUAL_THEME.materials.accent.metalness));
     }
 
     return {
@@ -171,20 +172,20 @@ function ExhibitLabels({ exhibit, debug }: { exhibit: AcademicExhibitDefinition;
     <>
       {labels.slice(0, positions.length).map((label, index) => (
         <Html key={`${exhibit.id}-label-${index}`} center position={positions[index]} distanceFactor={5} style={{ pointerEvents: 'none' }}>
-          <span className="museum-motion block max-w-28 select-none border border-white/15 bg-[#101425]/80 px-1.5 py-1 text-center text-[8px] tracking-[0.08em] text-white/80 shadow-sm backdrop-blur-sm">
+          <span className="museum-motion block max-w-28 select-none border px-1.5 py-1 text-center text-[8px] tracking-[0.08em] shadow-sm backdrop-blur-sm" style={{ backgroundColor: 'rgba(11, 16, 32, 0.94)', borderColor: MUSEUM_VISUAL_THEME.colors.labelBorder, color: MUSEUM_VISUAL_THEME.colors.labelText }}>
             {label}
           </span>
         </Html>
       ))}
       {exhibit.secondaryLabels?.map((label, index) => (
         <Html key={`${exhibit.id}-secondary-${index}`} center position={[-0.42 + index * 0.42, 0.36, 0.2]} distanceFactor={5} style={{ pointerEvents: 'none' }}>
-          <span className="block max-w-20 select-none text-center text-[7px] tracking-[0.05em] text-white/55">{label}</span>
+          <span className="block max-w-20 select-none text-center text-[7px] tracking-[0.05em] text-white/75">{label}</span>
         </Html>
       ))}
       {debug && (
         <Html position={[-0.65, 1.8, 0]} distanceFactor={7} style={{ pointerEvents: 'none' }}>
-          <div className="rounded border border-[#d3a06d]/60 bg-[#101425]/95 px-2 py-1 text-[8px] leading-4 text-white/80 shadow-lg">
-            <strong className="block text-[#d3a06d]">{exhibit.id}</strong>
+          <div className="rounded border px-2 py-1 text-[8px] leading-4 text-white/85 shadow-lg" style={{ backgroundColor: 'rgba(11, 16, 32, 0.97)', borderColor: MUSEUM_VISUAL_THEME.colors.labelBorder }}>
+            <strong className="block" style={{ color: MUSEUM_VISUAL_THEME.colors.interaction }}>{exhibit.id}</strong>
             <span className="block">{exhibit.stationId}</span>
             <span className="block">{exhibit.visualization} · {exhibit.conceptIds.length} concepts</span>
           </div>
