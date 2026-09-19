@@ -24,6 +24,19 @@ MUSEUM_INTERACTIVE_MESH_NAMES and scene.getObjectByName():
 These remain legacy/draft records with no canonical chapter assignment.
 aotim is present in the GLB but is not a current interaction binding.
 
+Phase 6B records each protected node's local matrix, world matrix, and
+world-space subtree bounds in
+`scripts/fixtures/museum-asset-baseline.json`. Candidate assets are compared
+with a `1e-5` floating-point tolerance by:
+
+```text
+node scripts/validate-museum-asset.mjs --asset <candidate.glb> --baseline scripts/fixtures/museum-asset-baseline.json
+```
+
+The validator requires exactly one resolution for all nine interaction roots
+and all four collision/occlusion roots. A hash change alone is not a failure;
+protected transform, bounds, collision, or structural drift is.
+
 ## Collision and occlusion-critical meshes
 
 findMuseumCollisionMeshes() resolves the following exact names for both
@@ -57,4 +70,3 @@ runtime migration.
    (or migrate the lookup to an explicit mapping).
 5. Re-run movement, occlusion, interaction, and station reachability checks.
 6. Compare the fixed screenshot set before accepting the candidate.
-
