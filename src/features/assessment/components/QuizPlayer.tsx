@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import type { CourseChapter } from "@/data/course";
 import type { Quiz, QuizAnswer, QuizAttempt, QuizGradeResult, QuizQuestion } from "@/data/course/assessment";
 import { gradeQuiz } from "@/features/assessment/grading/grade-quiz";
-import { getAttemptsForQuiz, getBestAttempt } from "@/features/assessment/progress/selectors";
+import { getBestAttempt, getSubmittedAttemptsForQuiz } from "@/features/assessment/progress/selectors";
 import { useAssessmentProgress } from "@/features/assessment/progress";
 import QuizIntro from "./QuizIntro";
 import QuizQuestionView from "./QuizQuestionView";
@@ -36,13 +36,15 @@ export default function QuizPlayer({ chapter, quiz, questions }: QuizPlayerProps
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const startedAtRef = useRef<string | null>(null);
   const attemptIdRef = useRef<string | null>(null);
+  const isSubmittingRef = useRef(false);
 
-  const attempts = getAttemptsForQuiz(progress, quiz.id);
+  const attempts = getSubmittedAttemptsForQuiz(progress, quiz.id);
   const bestAttempt = getBestAttempt(progress, quiz.id);
 
   const startQuiz = () => {
     startedAtRef.current = new Date().toISOString();
     attemptIdRef.current = createAttemptId();
+    isSubmittingRef.current = false;
     setAnswers({});
     setCurrentIndex(0);
     setSubmitNotice(null);
@@ -68,6 +70,8 @@ export default function QuizPlayer({ chapter, quiz, questions }: QuizPlayerProps
   };
 
   const submitQuiz = () => {
+    if (phase !== "answering" || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     const quizAnswers: QuizAnswer[] = questions.map((question) => ({
       questionId: question.id,
       selectedOptionIds: answers[question.id] ? [answers[question.id] as string] : [],
@@ -91,6 +95,7 @@ export default function QuizPlayer({ chapter, quiz, questions }: QuizPlayerProps
       setSubmitNotice(null);
       setPhase("results");
     } catch {
+      isSubmittingRef.current = false;
       setSubmissionError("Không thể chấm lượt luyện tập này. Bạn có thể quay lại chương và thử lại.");
     }
   };

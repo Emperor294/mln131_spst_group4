@@ -31,6 +31,10 @@ function getBrowserStorage(): Storage | null {
   }
 }
 
+function isValidTimestamp(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
+}
+
 export function isLocalProgressStorageAvailable(): boolean {
   const storage = getBrowserStorage();
   if (!storage) return false;
@@ -64,8 +68,13 @@ function normalizeAnswer(value: unknown): QuizAnswer | null {
 }
 
 function normalizeAttempt(value: unknown): QuizAttempt | null {
-  if (!isRecord(value) || typeof value.id !== "string" || !isQuizId(value.quizId) || typeof value.startedAt !== "string") return null;
+  if (!isRecord(value) || typeof value.id !== "string" || !isQuizId(value.quizId) || !isValidTimestamp(value.startedAt)) return null;
   if (!Array.isArray(value.answers)) return null;
+  if (value.submittedAt !== undefined && !isValidTimestamp(value.submittedAt)) return null;
+  if (typeof value.score === "number" && (!Number.isFinite(value.score) || value.score < 0 || value.score > 1)) return null;
+  if (typeof value.correctCount === "number" && (!Number.isInteger(value.correctCount) || value.correctCount < 0)) return null;
+  if (typeof value.totalQuestions === "number" && (!Number.isInteger(value.totalQuestions) || value.totalQuestions <= 0)) return null;
+  if (typeof value.correctCount === "number" && typeof value.totalQuestions === "number" && value.correctCount > value.totalQuestions) return null;
   const answers = value.answers.map(normalizeAnswer).filter((answer): answer is QuizAnswer => answer !== null);
   const attempt: QuizAttempt = { id: value.id, quizId: value.quizId, startedAt: value.startedAt, answers };
   if (typeof value.submittedAt === "string") attempt.submittedAt = value.submittedAt;

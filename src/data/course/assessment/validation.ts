@@ -1,6 +1,6 @@
 import { COURSE_CHAPTERS } from "../chapters";
 import { COURSE_LESSONS } from "../lessons";
-import { ACADEMIC_SOURCES } from "../sources";
+import { ACADEMIC_SOURCES, MLN131_TEXTBOOK_SOURCE_ID } from "../sources";
 import { CHAPTER_TEXTBOOK_PAGE_MAP } from "../textbook-page-map";
 import { LESSON_TEXTBOOK_PAGE_MAP } from "../lesson-page-map";
 import type { ScopedSourceReference } from "../types";
@@ -110,6 +110,9 @@ export function getAssessmentDataIssues(): string[] {
     if (quiz.passingScore !== undefined && (quiz.passingScore < 0 || quiz.passingScore > 1)) {
       issues.push(`Quiz ${quiz.id} có passingScore ngoài khoảng 0–1.`);
     }
+    if (quiz.passingScore !== undefined) {
+      issues.push(`Quiz ${quiz.id} không được đặt passingScore trong chính sách assessment v1.`);
+    }
     if (quiz.status === "available" && quiz.questionIds.length === 0) {
       issues.push(`Quiz ${quiz.id} available phải có ít nhất một câu hỏi.`);
     }
@@ -210,6 +213,9 @@ export function getAssessmentDataIssues(): string[] {
       ) {
         issues.push(`Question ${question.id} có scoped source không khớp bản ghi canonical: ${reference.id}`);
       }
+      if (question.status === "verified" && reference.sourceId !== MLN131_TEXTBOOK_SOURCE_ID) {
+        issues.push(`Question ${question.id} verified phải dùng nguồn giáo trình MLN131 canonical.`);
+      }
     }
 
     const chapterMapping = CHAPTER_TEXTBOOK_PAGE_MAP.find((mapping) => mapping.chapterId === question.chapterId);
@@ -288,10 +294,15 @@ export function getAssessmentGradingIssues(): string[] {
           .filter((optionId) => !getCorrectOptionIds(question).includes(optionId))
           .slice(0, 1),
     }));
+    const unansweredAnswers = questions.map((question) => ({
+      questionId: question.id,
+      selectedOptionIds: [],
+    }));
 
     const allCorrect = gradeQuiz(quiz, questions, correctAnswers);
     const allWrong = gradeQuiz(quiz, questions, wrongAnswers);
     const oneCorrect = gradeQuiz(quiz, questions, oneCorrectAnswers);
+    const unanswered = gradeQuiz(quiz, questions, unansweredAnswers);
 
     if (allCorrect.correctCount !== questions.length || allCorrect.percentage !== 100) {
       issues.push(`Grading synthetic all-correct thất bại cho ${quiz.id}.`);
@@ -301,6 +312,14 @@ export function getAssessmentGradingIssues(): string[] {
     }
     if (oneCorrect.correctCount !== 1 || oneCorrect.totalQuestions !== questions.length) {
       issues.push(`Grading synthetic one-correct thất bại cho ${quiz.id}.`);
+    }
+    if (unanswered.correctCount !== 0 || unanswered.percentage !== 0) {
+      issues.push(`Grading synthetic unanswered thất bại cho ${quiz.id}.`);
+    }
+    for (const result of [allCorrect, allWrong, oneCorrect, unanswered]) {
+      if (result.percentage < 0 || result.percentage > 100) {
+        issues.push(`Grading percentage ngoài khoảng 0–100 cho ${quiz.id}.`);
+      }
     }
   }
 

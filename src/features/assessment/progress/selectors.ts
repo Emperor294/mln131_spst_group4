@@ -12,12 +12,31 @@ export function getAttemptsForQuiz(state: AssessmentProgressState, quizId: QuizI
   return state.attempts.filter((attempt) => attempt.quizId === quizId);
 }
 
+function isValidTimestamp(value: string | undefined): boolean {
+  return Boolean(value && Number.isFinite(Date.parse(value)));
+}
+
+export function isCompletedAttempt(attempt: QuizAttempt): boolean {
+  return isValidTimestamp(attempt.submittedAt)
+    && typeof attempt.score === "number"
+    && Number.isFinite(attempt.score)
+    && attempt.score >= 0
+    && attempt.score <= 1
+    && typeof attempt.correctCount === "number"
+    && Number.isInteger(attempt.correctCount)
+    && attempt.correctCount >= 0
+    && typeof attempt.totalQuestions === "number"
+    && Number.isInteger(attempt.totalQuestions)
+    && attempt.totalQuestions > 0
+    && attempt.correctCount <= attempt.totalQuestions;
+}
+
 /** Submitted attempts are the only records that represent a completed practice session. */
 export function getSubmittedAttemptsForQuiz(
   state: AssessmentProgressState,
   quizId: QuizId,
 ): readonly QuizAttempt[] {
-  return getAttemptsForQuiz(state, quizId).filter((attempt) => Boolean(attempt.submittedAt));
+  return getAttemptsForQuiz(state, quizId).filter(isCompletedAttempt);
 }
 
 function timestampValue(value: string): number {

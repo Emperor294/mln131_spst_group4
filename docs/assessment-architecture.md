@@ -1,7 +1,8 @@
-# Assessment architecture (Phase 5A)
+# Assessment architecture (Phases 5A–5E)
 
-Phase 5A establishes the assessment and anonymous-progress foundation. It does
-not author the seven quiz banks; those belong to Phase 5B.
+Phase 5 establishes the assessment and anonymous-progress foundation through
+Phase 5D. The canonical quiz bank, learner player, local attempts, and practice
+dashboard are now implemented and frozen by the Phase 5E audit.
 
 ## Phase 5B quiz-bank policy
 
@@ -22,10 +23,9 @@ questions are not converted, answered, scored, or persisted as quiz attempts.
 questions remain inside their `LearningSection`s, retain their textbook wording
 and citations, and have no answer key, score, or progress state.
 
-`QuizQuestion` is a separate assessment record. A future verified question will
-have explicit option IDs, a type-safe correct answer, a source-grounded
-explanation, and resolved `ScopedSourceReference`s. No canonical quiz questions
-exist yet.
+`QuizQuestion` is a separate assessment record. The current bank contains 56
+verified single-choice questions with explicit option IDs, type-safe correct
+answers, source-grounded explanations, and resolved `ScopedSourceReference`s.
 
 ## Canonical data flow
 
@@ -45,9 +45,10 @@ Pure grading
 Versioned local progress
 ```
 
-Seven planned quiz metadata records (`quiz-ch01` through `quiz-ch07`) are
-registered with empty `questionIds`. A quiz becomes available only after its
-questions are authored, verified, and validated.
+Seven available quiz metadata records (`quiz-ch01` through `quiz-ch07`) each
+resolve eight verified questions. A quiz remains available only while its
+question IDs, answer structures, lesson ownership, and source references pass
+assessment validation.
 
 ## Attempts and grading
 
@@ -77,8 +78,10 @@ to storage. Access is client-only and malformed, unavailable, blocked, or newer
 storage falls back to an empty state.
 
 Progress is deliberately conservative: `not-attempted`, `attempted`, or
-`passed`. `passed` is available only when a quiz later defines an explicit
-application `passingScore`; it is not an official university grade.
+`passed` remains an internal future-compatible state only when a quiz explicitly
+defines an application `passingScore`; it is not an official university grade.
+The current v1 quizzes leave `passingScore` unset, so learner-facing progress is
+limited to `not-attempted` and `attempted`.
 
 ## Future backend boundary
 
@@ -86,17 +89,25 @@ application `passingScore`; it is not an official university grade.
 components. A future authenticated/backend implementation can replace the local
 repository without changing quiz content or grading semantics. No account,
 database, synchronization, leaderboard, timer, randomization, or AI grading is
-introduced in Phase 5A.
+included in the frozen Phase 5 scope.
 
-The future route foundation is `/chapters/[chapterId]/quiz`. Phase 5B now
-provides seven available metadata records with eight verified single-choice
-questions each (56 total). Each question has four stable-ID options, one
-correct option, a source-grounded explanation, and narrow canonical textbook
-references. All three lessons in every chapter are represented. Distractors
-avoid “all of the above”, stereotypes, and current-affairs claims. The route
-shell reports question availability but does not expose the interactive player;
-that player and submission UX are implemented in Phase 5C through the client
-`QuizPlayer`. Draft answers remain in session state until submission; submitted
-attempts are graded by `gradeQuiz`, persisted anonymously, and rendered with
-canonical explanations and source references. No pass/fail threshold is shown
-while `passingScore` remains unset.
+The canonical route is `/chapters/[chapterId]/quiz`. Phase 5B provides seven
+available metadata records with eight verified single-choice questions each (56
+total). Each question has four stable-ID options, one correct option, a
+source-grounded explanation, and narrow canonical textbook references. All three
+lessons in every chapter are represented. Distractors avoid “all of the above”,
+stereotypes, and current-affairs claims. The Phase 5C client `QuizPlayer`
+keeps draft answers in session state, guards submission, grades through
+`gradeQuiz`, persists submitted attempts anonymously, and renders canonical
+explanations and sources after submission. Phase 5D exposes latest/best practice
+history at `/progress`; it remains descriptive and shows no pass/fail threshold
+while `passingScore` is unset.
+
+## Frozen v1 policy (Phase 5E)
+
+- Seven quizzes, eight questions each, 56 total.
+- Single-choice only, four options per question, one correct option.
+- No timer, randomization, analytics, account, cloud sync, or official grade.
+- Attempts store lightweight IDs, answers, timestamps, and result metadata only.
+- Current learner-facing progress is `Chưa luyện tập` / `Đã luyện tập`.
+- Changes to this policy require a new explicit phase.

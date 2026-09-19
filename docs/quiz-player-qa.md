@@ -40,6 +40,7 @@ used.
 - Disable or block `localStorage`: the visible result must still render and show a concise save notice.
 - Corrupt `socialism360-progress`: the provider should recover with empty progress and allow a new attempt.
 - Submit twice or retake: each completed attempt must have a distinct ID; previous attempts must remain available to selectors.
+- Rapid double-click on the final confirmation must produce one graded/persisted attempt; a retake then produces a new ID.
 
 ## Academic and sensitive-content checks
 

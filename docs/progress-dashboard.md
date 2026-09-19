@@ -25,7 +25,7 @@ CoursePracticeSummary
 /progress
 ```
 
-`getCoursePracticeSummary` iterates canonical chapter order, ignores orphaned quiz IDs, counts only submitted attempts, and delegates latest/best selection to the assessment selectors. The best attempt is the highest score; ties resolve to the most recent submitted attempt. Recent activity is sorted by submitted timestamp descending and limited to five records.
+`getCoursePracticeSummary` iterates canonical chapter order, ignores orphaned quiz IDs, counts only valid submitted attempts, and delegates latest/best selection to the assessment selectors. The best attempt is the highest score; ties resolve to the most recent submitted attempt. Recent activity is sorted by submitted timestamp descending and limited to five records.
 
 ## Storage and privacy boundary
 
