@@ -17,8 +17,26 @@ Implemented in `museum-layout-v2.ts` and `MuseumArchitectureLayer`:
 - static grid reachability validation for all seven zone entries and 17 stations;
 - `?museumDebug=1` development layout markers.
 
-Detailed academic installations remain deferred to Phase 6D. Final lighting,
-materials, and atmosphere remain deferred to Phase 6E.
+The academic exhibit layer is now implemented in Phase 6D. Final lighting,
+materials, atmosphere, and release validation remain deferred to Phase 6E/6F.
+
+## Phase 6D academic exhibit status
+
+Implemented in `academic-exhibits.ts` and `AcademicExhibitLayer`:
+
+- 17 data-driven exhibits attached to the existing 17 station roots;
+- all 28 MuseumConcept IDs preserved and validated exactly once;
+- timeline, foundation, cluster, layer, framework, sequence, comparison,
+  relationship, bridge, network, and parallel visual vocabulary;
+- Zone 5 structure → necessity → alliance composition with the broader
+  social-structure distinction preserved;
+- abstract, non-stereotypical Zone 6 geometry;
+- parallel Zone 7 function pillars rather than a sequential four-function chain;
+- shared procedural geometry/material resources with no new assets;
+- static exhibit-bound and concept-grouping validation.
+
+Phase 6D does not change canonical academic data, ConceptDialog, interaction
+root counts, collision, occlusion, the GLB, or the lightweight mobile fallback.
 
 ## Recommendation
 
@@ -210,9 +228,9 @@ qa-zone05-alliance-close, qa-zone06, qa-zone07, and qa-station-close. These are
 review viewpoints only; they must not alter the production spawn or camera
 controls.
 
-## Phase 6C → 6D handoff
+## Phase 6D → 6E handoff
 
-Before detailed academic installations are authored:
+Before final lighting and atmosphere are authored:
 
 1. run the physical-layout static validation;
 2. verify the 7/7 zone-entry and 17/17 station reachability result;
@@ -220,5 +238,7 @@ Before detailed academic installations are authored:
 4. verify movement, collision, occlusion, all nine artifact roots, and all 17
    procedural stations;
 5. keep the GLB validator and protected-node baseline unchanged;
-6. preserve the open circulation model while adding only source-grounded
-   exhibit geometry in Phase 6D.
+6. preserve the open circulation model while visually reviewing the new
+   source-grounded exhibit geometry;
+7. keep final material, lighting, atmosphere, and legacy de-emphasis decisions
+   in Phase 6E.

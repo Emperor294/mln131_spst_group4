@@ -3,6 +3,7 @@ import { MUSEUM_ZONES } from "@/data/course/museum-zones";
 import { MUSEUM_CONCEPT_STATIONS } from "./concept-stations";
 import { MUSEUM_WALKABLE_BOUNDS } from "./museum-layout-v2";
 import { getMuseumPhysicalLayoutIssues } from "./museum-layout-validation";
+import { getAcademicExhibitIssues } from "./academic-exhibit-validation";
 import { MUSEUM_SPATIAL_ZONES } from "./spatial-zones";
 
 const MUSEUM_BOUNDS = MUSEUM_WALKABLE_BOUNDS;
@@ -10,7 +11,7 @@ const MUSEUM_BOUNDS = MUSEUM_WALKABLE_BOUNDS;
 const finitePosition = (position: readonly number[]) => position.length === 3 && position.every(Number.isFinite);
 
 export function getMuseumSpatialDataIssues(): string[] {
-  const issues: string[] = [...getMuseumPhysicalLayoutIssues()];
+  const issues: string[] = [...getMuseumPhysicalLayoutIssues(), ...getAcademicExhibitIssues()];
   const canonicalZoneIds = new Set<string>(MUSEUM_ZONES.map((zone) => zone.id));
   const canonicalConceptIds = new Set<string>(MUSEUM_CONCEPTS.map((concept) => concept.id));
   const spatialZoneIds = new Set<string>();

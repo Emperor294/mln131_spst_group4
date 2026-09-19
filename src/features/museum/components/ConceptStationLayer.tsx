@@ -4,6 +4,7 @@ import { MUSEUM_ZONES, getMuseumZoneById } from '@/data/course';
 import { MUSEUM_CONCEPT_STATIONS } from '../data/concept-stations';
 import type { MuseumInteractionRegistry } from '../runtime/interaction-registry';
 import ConceptStation from './ConceptStation';
+import { AcademicExhibitProvider } from './AcademicExhibitLayer';
 
 interface ConceptStationLayerProps {
   registry: MuseumInteractionRegistry;
@@ -11,7 +12,7 @@ interface ConceptStationLayerProps {
 
 export default function ConceptStationLayer({ registry }: ConceptStationLayerProps) {
   return (
-    <>
+    <AcademicExhibitProvider>
       {MUSEUM_CONCEPT_STATIONS.map((station) => {
         const zone = getMuseumZoneById(station.zoneId);
         if (!zone) return null;
@@ -25,6 +26,6 @@ export default function ConceptStationLayer({ registry }: ConceptStationLayerPro
           />
         );
       })}
-    </>
+    </AcademicExhibitProvider>
   );
 }

@@ -7,6 +7,7 @@ import type { MuseumConceptStation } from '../data/concept-stations';
 import { getMuseumZoneAccent } from '../data/spatial-zones';
 import type { MuseumInteractionRegistry, MuseumInteractionTarget } from '../runtime/interaction-registry';
 import { ACADEMIC_STATION_INTERACTION_DISTANCE } from '../runtime/museum-geometry';
+import AcademicExhibitLayer from './AcademicExhibitLayer';
 
 interface ConceptStationProps {
   station: MuseumConceptStation;
@@ -44,6 +45,7 @@ export default function ConceptStation({ station, zoneNumber, registry }: Concep
 
   return (
     <group ref={rootRef} position={station.position}>
+      <AcademicExhibitLayer station={station} />
       <mesh ref={highlightMeshRef} position={[0, 0.58, 0]}>
         <boxGeometry args={[0.68, 0.96, 0.18]} />
         <meshStandardMaterial color="#283043" emissive={accent} emissiveIntensity={0.12} roughness={0.5} metalness={0.18} />
