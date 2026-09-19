@@ -3,6 +3,19 @@
 Phase 5A establishes the assessment and anonymous-progress foundation. It does
 not author the seven quiz banks; those belong to Phase 5B.
 
+## Phase 5B quiz-bank policy
+
+The canonical bank now contains exactly eight verified questions per chapter
+(56 total). Every item is single-choice with exactly four stable-ID options and
+one correct option. Each question covers a narrow audited textbook range,
+includes a concise source-grounded explanation, and is distributed across all
+three lessons of its chapter. Distractors use adjacent concept confusions rather
+than inflammatory, stereotyped, or fabricated current facts. No item depends on
+2026 statistics, current officials, elections, or post-2021 policy updates.
+
+The bank remains separate from the 30 `ReviewQuestion` records. Review
+questions are not converted, answered, scored, or persisted as quiz attempts.
+
 ## Two different question domains
 
 `ReviewQuestion` is the textbook's self-study material. The 30 existing review
@@ -75,6 +88,11 @@ repository without changing quiz content or grading semantics. No account,
 database, synchronization, leaderboard, timer, randomization, or AI grading is
 introduced in Phase 5A.
 
-The future route foundation is `/chapters/[chapterId]/quiz`. Planned shells show
-that the exercise is being prepared and link back to the canonical chapter; they
-do not expose empty forms or fabricated questions.
+The future route foundation is `/chapters/[chapterId]/quiz`. Phase 5B now
+provides seven available metadata records with eight verified single-choice
+questions each (56 total). Each question has four stable-ID options, one
+correct option, a source-grounded explanation, and narrow canonical textbook
+references. All three lessons in every chapter are represented. Distractors
+avoid “all of the above”, stereotypes, and current-affairs claims. The route
+shell reports question availability but does not expose the interactive player;
+that player and submission UX are deferred to Phase 5C.

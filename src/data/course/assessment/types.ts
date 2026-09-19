@@ -1,7 +1,7 @@
 import type { ChapterId, LessonId, ScopedSourceReference } from "../types";
 
 export type QuizId = `quiz-ch${"01" | "02" | "03" | "04" | "05" | "06" | "07"}`;
-export type QuizQuestionId = `quiz-question-${string}`;
+export type QuizQuestionId = `q-${string}`;
 
 export type QuizQuestionType = "single-choice" | "multiple-choice";
 export type QuizQuestionStatus = "draft" | "verified";

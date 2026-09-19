@@ -47,8 +47,12 @@ export default async function QuizPage({ params }: QuizPageProps) {
           </div>
           <p className="chapter-overview__copy">{quiz.description}</p>
           <div className="chapter-overview__placeholder" role="status">
-            <span aria-hidden="true">COMING SOON</span>
-            <p>Bài luyện tập đang được chuẩn bị. Nội dung học tập của chương vẫn sẵn sàng để bạn khám phá.</p>
+            <span aria-hidden="true">{quiz.status === "available" ? "READY" : "COMING SOON"}</span>
+            <p>
+              {quiz.status === "available"
+                ? `${quiz.questionIds.length} câu hỏi đã sẵn sàng. Trình làm bài tương tác sẽ được giới thiệu ở pha tiếp theo.`
+                : "Bài luyện tập đang được chuẩn bị. Nội dung học tập của chương vẫn sẵn sàng để bạn khám phá."}
+            </p>
           </div>
           <Link href={`/chapters/${chapter.id}`} className="button button--primary">Khám phá bài học</Link>
         </section>

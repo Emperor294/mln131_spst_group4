@@ -1,6 +1,8 @@
 import { COURSE_CHAPTERS } from "../chapters";
 import { COURSE_LESSONS } from "../lessons";
 import { ACADEMIC_SOURCES } from "../sources";
+import { CHAPTER_TEXTBOOK_PAGE_MAP } from "../textbook-page-map";
+import { LESSON_TEXTBOOK_PAGE_MAP } from "../lesson-page-map";
 import type { ScopedSourceReference } from "../types";
 import { QUIZ_QUESTIONS } from "./questions";
 import { COURSE_QUIZZES } from "./quizzes";
@@ -41,12 +43,53 @@ function getCorrectOptionIds(question: QuizQuestion): readonly string[] {
   return question.type === "single-choice" ? [question.correctOptionId] : question.correctOptionIds;
 }
 
+function isContained(
+  inner: { start: number; end: number } | undefined,
+  outer: { start: number; end: number } | undefined,
+): boolean {
+  return Boolean(inner && outer && inner.start >= outer.start && inner.end <= outer.end);
+}
+
+function samePageRange(
+  left: { start: number; end: number } | undefined,
+  right: { start: number; end: number } | undefined,
+): boolean {
+  return left?.start === right?.start && left?.end === right?.end;
+}
+
+function getCanonicalScopedReferences(): ReadonlyMap<string, ScopedSourceReference> {
+  const references = new Map<string, ScopedSourceReference>();
+  const add = (reference: ScopedSourceReference) => {
+    if (!references.has(reference.id)) references.set(reference.id, reference);
+  };
+
+  for (const chapter of COURSE_CHAPTERS) {
+    for (const reference of chapter.sourceRefs ?? []) add(reference);
+    for (const lesson of chapter.lessons) {
+      for (const reference of lesson.sourceRefs ?? []) add(reference);
+      for (const section of lesson.sections) {
+        for (const reference of section.sourceRefs ?? []) add(reference);
+        if (section.type === "review-question") {
+          for (const question of section.questions) {
+            for (const reference of question.sourceRefs) add(reference);
+          }
+        }
+      }
+    }
+  }
+  for (const mapping of CHAPTER_TEXTBOOK_PAGE_MAP) add(mapping.sourceRef);
+  for (const mapping of LESSON_TEXTBOOK_PAGE_MAP) add(mapping.sourceRef);
+
+  return references;
+}
+
 export function getAssessmentDataIssues(): string[] {
   const issues: string[] = [];
   const chapterIds = new Set(COURSE_CHAPTERS.map((chapter) => chapter.id));
   const lessonIds = new Set(COURSE_LESSONS.map((lesson) => lesson.id));
   const lessonChapters = new Map(COURSE_LESSONS.map((lesson) => [lesson.id, lesson.chapterId]));
   const sourceIds = new Set(ACADEMIC_SOURCES.map((source) => source.id));
+  const canonicalReferences = getCanonicalScopedReferences();
   const quizIds = new Set<string>();
   const questionIds = new Set<string>();
   const questionOwners = new Map<string, string>();
@@ -89,6 +132,9 @@ export function getAssessmentDataIssues(): string[] {
     }
   }
 
+  if (COURSE_QUIZZES.length !== 7) issues.push(`Assessment registry phải có đúng 7 quiz, hiện có ${COURSE_QUIZZES.length}.`);
+  if (QUIZ_QUESTIONS.length !== 56) issues.push(`Assessment registry phải có đúng 56 question, hiện có ${QUIZ_QUESTIONS.length}.`);
+
   for (const question of QUIZ_QUESTIONS) {
     if (questionIds.has(question.id)) issues.push(`Quiz question ID bị trùng: ${question.id}`);
     questionIds.add(question.id);
@@ -113,12 +159,17 @@ export function getAssessmentDataIssues(): string[] {
     }
 
     const optionIds = new Set<string>();
+    const optionLabels = new Set<string>();
     for (const option of question.options) {
       if (!hasText(option.id) || !hasText(option.label)) issues.push(`Question ${question.id} có option rỗng.`);
       if (optionIds.has(option.id)) issues.push(`Question ${question.id} có option ID bị trùng: ${option.id}`);
       optionIds.add(option.id);
+      const normalizedLabel = option.label.trim().toLocaleLowerCase();
+      if (optionLabels.has(normalizedLabel)) issues.push(`Question ${question.id} có option label bị trùng.`);
+      optionLabels.add(normalizedLabel);
     }
-    if (question.options.length < 2) issues.push(`Question ${question.id} phải có ít nhất 2 option.`);
+    if (question.options.length !== 4) issues.push(`Question ${question.id} phải có đúng 4 option.`);
+    if (question.type !== "single-choice") issues.push(`Question ${question.id} không thuộc loại single-choice của Phase 5B.`);
 
     const correctOptionIds = getCorrectOptionIds(question);
     if (correctOptionIds.length === 0) issues.push(`Question ${question.id} phải có đáp án đúng.`);
@@ -140,8 +191,62 @@ export function getAssessmentDataIssues(): string[] {
       if (question.sourceRefs.length === 0) {
         issues.push(`Question ${question.id} verified phải có sourceRefs.`);
       }
+      if (question.explanation.trim() === question.prompt.trim()) {
+        issues.push(`Question ${question.id} có explanation lặp lại prompt.`);
+      }
     }
     validateSourceRefs(question.sourceRefs, sourceIds, issues, `Question ${question.id}`);
+    for (const reference of question.sourceRefs) {
+      const canonicalReference = canonicalReferences.get(reference.id);
+      if (!canonicalReference) {
+        issues.push(`Question ${question.id} tham chiếu scoped source chưa đăng ký: ${reference.id}`);
+      } else if (
+        canonicalReference.sourceId !== reference.sourceId
+        || !samePageRange(canonicalReference.bookPages, reference.bookPages)
+        || !samePageRange(canonicalReference.pdfPages, reference.pdfPages)
+      ) {
+        issues.push(`Question ${question.id} có scoped source không khớp bản ghi canonical: ${reference.id}`);
+      }
+    }
+
+    const chapterMapping = CHAPTER_TEXTBOOK_PAGE_MAP.find((mapping) => mapping.chapterId === question.chapterId);
+    const lessonMapping = question.lessonId
+      ? LESSON_TEXTBOOK_PAGE_MAP.find((mapping) => mapping.lessonId === question.lessonId)
+      : undefined;
+    if (question.lessonId && !lessonMapping) {
+      issues.push(`Question ${question.id} không tìm thấy page mapping cho lesson ${question.lessonId}.`);
+    }
+    if (question.sourceRefs.some((reference) => reference.bookPages && reference.bookPages.end - reference.bookPages.start + 1 > 5)) {
+      issues.push(`Question ${question.id} có citation span trên 5 trang sách.`);
+    }
+    for (const reference of question.sourceRefs) {
+      if (!isContained(reference.bookPages, chapterMapping?.sourceRef.bookPages)
+        || !isContained(reference.pdfPages, chapterMapping?.sourceRef.pdfPages)) {
+        issues.push(`Question ${question.id} có sourceRef nằm ngoài page range của chapter.`);
+      }
+    }
+    if (lessonMapping && !question.sourceRefs.some((reference) => (
+      isContained(reference.bookPages, lessonMapping.sourceRef.bookPages)
+      && isContained(reference.pdfPages, lessonMapping.sourceRef.pdfPages)
+    ))) {
+      issues.push(`Question ${question.id} phải có ít nhất một sourceRef trong lesson ${question.lessonId}.`);
+    }
+  }
+
+  for (const quiz of COURSE_QUIZZES) {
+    if (quiz.questionIds.length !== 8) issues.push(`Quiz ${quiz.id} phải có đúng 8 question.`);
+    if (quiz.status !== "available") issues.push(`Quiz ${quiz.id} phải available sau khi ngân hàng được xác minh.`);
+    const lessonCounts = new Map<string, number>();
+    for (const questionId of quiz.questionIds) {
+      const question = QUIZ_QUESTIONS.find((item) => item.id === questionId);
+      if (question?.lessonId) lessonCounts.set(question.lessonId, (lessonCounts.get(question.lessonId) ?? 0) + 1);
+    }
+    const chapterLessons = COURSE_LESSONS.filter((lesson) => lesson.chapterId === quiz.chapterId);
+    for (const lesson of chapterLessons) {
+      if ((lessonCounts.get(lesson.id) ?? 0) < 2) {
+        issues.push(`Quiz ${quiz.id} phải có ít nhất 2 question cho ${lesson.id}.`);
+      }
+    }
   }
 
   return issues;
