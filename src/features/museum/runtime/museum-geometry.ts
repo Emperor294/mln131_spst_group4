@@ -13,11 +13,25 @@ export const ACADEMIC_STATION_INTERACTION_DISTANCE = 5;
 
 export function findMuseumCollisionMeshes(scene: THREE.Object3D): THREE.Mesh[] {
   const meshes: THREE.Mesh[] = [];
+  const seen = new Set<THREE.Mesh>();
 
   for (const name of MUSEUM_COLLISION_MESH_NAMES) {
     const object = scene.getObjectByName(name);
-    if (object instanceof THREE.Mesh) meshes.push(object);
+    if (object instanceof THREE.Mesh) {
+      meshes.push(object);
+      seen.add(object);
+    }
   }
+
+  // Phase 6C structures register themselves as static colliders/occluders.
+  // Traversal happens once during component setup; there is no per-frame scene walk.
+  scene.traverse((object) => {
+    if (!(object instanceof THREE.Mesh) || seen.has(object)) return;
+    if (object.userData.museumCollider || object.userData.museumOccluder) {
+      meshes.push(object);
+      seen.add(object);
+    }
+  });
 
   return meshes;
 }

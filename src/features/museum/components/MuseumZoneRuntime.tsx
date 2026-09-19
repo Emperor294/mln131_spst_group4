@@ -17,6 +17,11 @@ interface MuseumZoneRuntimeProps {
 
 assertMuseumSpatialDataIntegrity();
 
+function isInsideZone(zone: (typeof MUSEUM_SPATIAL_ZONES)[number], x: number, z: number, margin = 0) {
+  return x >= zone.volume.minX - margin && x <= zone.volume.maxX + margin
+    && z >= zone.volume.minZ - margin && z <= zone.volume.maxZ + margin;
+}
+
 export default function MuseumZoneRuntime({ registry, onZoneChange }: MuseumZoneRuntimeProps) {
   const currentZoneRef = useRef<MuseumZoneId | null>(null);
 
@@ -25,13 +30,8 @@ export default function MuseumZoneRuntime({ registry, onZoneChange }: MuseumZone
     if (currentZoneId) {
       const currentZone = MUSEUM_SPATIAL_ZONES.find((zone) => zone.zoneId === currentZoneId);
       if (currentZone) {
-        const currentDistance = Math.hypot(
-          camera.position.x - currentZone.center[0],
-          camera.position.z - currentZone.center[2],
-        );
-        // A small exit buffer prevents rapid A/B changes when activation
-        // circles overlap at a zone boundary.
-        if (currentDistance <= currentZone.activationRadius + 0.35) return;
+        // A small exit buffer prevents rapid changes at a physical bay boundary.
+        if (isInsideZone(currentZone, camera.position.x, camera.position.z, 0.35)) return;
       }
     }
 
@@ -40,7 +40,7 @@ export default function MuseumZoneRuntime({ registry, onZoneChange }: MuseumZone
 
     for (const zone of MUSEUM_SPATIAL_ZONES) {
       const distance = Math.hypot(camera.position.x - zone.center[0], camera.position.z - zone.center[2]);
-      if (distance <= zone.activationRadius && distance < nearestDistance) {
+      if (isInsideZone(zone, camera.position.x, camera.position.z) && distance < nearestDistance) {
         nearestZone = zone.zoneId;
         nearestDistance = distance;
       }

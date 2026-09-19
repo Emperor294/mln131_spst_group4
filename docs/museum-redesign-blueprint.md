@@ -1,7 +1,24 @@
 # SOCIALISM 360 museum redesign blueprint
 
-This document is the Phase 6A physical and authoring blueprint. It does not
-implement a redesign and does not change museum.glb.
+This document now records the Phase 6C physical implementation. The GLB remains
+unchanged; the physical shell is a source-controlled procedural R3F layer.
+
+## Phase 6C implementation status
+
+Implemented in `museum-layout-v2.ts` and `MuseumArchitectureLayer`:
+
+- a lobby/orientation frame around the existing spawn;
+- seven open exhibition bays with portal thresholds, floor markers, and partial
+  partitions;
+- a wider central Zone 5 footprint;
+- centralized station positions and rectangular zone volumes;
+- shared procedural box geometry/materials;
+- static collider and occluder registration through layout metadata;
+- static grid reachability validation for all seven zone entries and 17 stations;
+- `?museumDebug=1` development layout markers.
+
+Detailed academic installations remain deferred to Phase 6D. Final lighting,
+materials, and atmosphere remain deferred to Phase 6E.
 
 ## Recommendation
 
@@ -115,11 +132,10 @@ The intended route is:
 ENTRY → 01 → 02 → 03 → 04 → 05 → 06 → 07
 
 Each zone needs a visible onward cue and a return sightline, but cross-links and
-the lobby index must support free exploration. Static analysis shows the
-current GLB is an open bounded rectangle with logical centers rather than seven
-rooms, so the full guided flow requires an architectural remodel or a
-substantial procedural partition layer. It should not be faked by moving signs
-alone.
+the lobby index must support free exploration. The GLB remains an open bounded
+rectangle; Phase 6C supplies an open procedural partition layer, so the guided
+flow is represented by physical thresholds and bay framing rather than signs
+alone. Doors remain open and static reachability preserves free exploration.
 
 ## Wayfinding language
 
@@ -165,7 +181,12 @@ The current vietnam_flag.glb bounds are an outlier that extends beyond the
 architectural shell; its future placement needs human review before it is
 considered part of the canonical exhibition.
 
-## Phase 6 visual QA plan
+## Phase 6C QA status and Phase 6 visual QA plan
+
+Static validation reports 7/7 zone entries and 17/17 stations reachable on the
+authored 0.2-unit grid with 0.42-unit player clearance. Browser visual QA was
+not available, so partition height, sightlines, atmosphere, and sign legibility
+still require the fixed screenshot review below.
 
 For each future milestone, capture before/after screenshots from fixed,
 documented cameras at 1440×900 (and optionally 1366×768):
@@ -189,14 +210,15 @@ qa-zone05-alliance-close, qa-zone06, qa-zone07, and qa-station-close. These are
 review viewpoints only; they must not alter the production spawn or camera
 controls.
 
-## Phase 6B entry criteria
+## Phase 6C → 6D handoff
 
-Before a controlled optimization:
+Before detailed academic installations are authored:
 
-1. create a working export beside, not over, the original;
-2. preserve the protected node list;
-3. add an automated node/bounds/material validation step;
-4. compare the fixed screenshot set;
-5. retest movement, collision, occlusion, all nine artifact roots, and all 17
+1. run the physical-layout static validation;
+2. verify the 7/7 zone-entry and 17/17 station reachability result;
+3. perform browser screenshot and walk-through QA at the fixed viewpoints;
+4. verify movement, collision, occlusion, all nine artifact roots, and all 17
    procedural stations;
-6. verify a deployed GLB response is binary rather than an LFS pointer.
+5. keep the GLB validator and protected-node baseline unchanged;
+6. preserve the open circulation model while adding only source-grounded
+   exhibit geometry in Phase 6D.

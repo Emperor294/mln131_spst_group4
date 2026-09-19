@@ -10,6 +10,7 @@ import ObjectHighlighter from './ObjectHighlighter';
 import Crosshair from './Crosshair';
 import MuseumObjectDialog from '../../components/ui/museum-object-dialog';
 import ConceptDialog from '@/features/museum/components/ConceptDialog';
+import MuseumArchitectureLayer from '@/features/museum/components/MuseumArchitectureLayer';
 import MuseumZoneRuntime from '@/features/museum/components/MuseumZoneRuntime';
 import { getConceptStationById } from '@/features/museum/data/concept-stations';
 import { createMuseumInteractionRegistry } from '@/features/museum/runtime/interaction-registry';
@@ -210,6 +211,7 @@ export default function MuseumExplorerScene() {
 
           <Floor />
           <MuseumModel />
+          <MuseumArchitectureLayer />
 
           <CharacterController
             enabled={!dialogOpen}
