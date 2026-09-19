@@ -26,6 +26,7 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
   const { camera, scene } = useThree();
   const controlsRef = useRef<ComponentRef<typeof PointerLockControls>>(null);
   const [isLocked, setIsLocked] = useState(false);
+  const isLockedRef = useRef(false);
   const enabledRef = useRef(enabled);
   const collisionMeshesRef = useRef<THREE.Mesh[]>([]);
   const collisionIntersectionsRef = useRef<THREE.Intersection[]>([]);
@@ -85,7 +86,10 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!enabledRef.current) return;
+      // Ignore movement input until the user has explicitly entered pointer lock.
+      // This prevents keys pressed on the onboarding/entry surface from being
+      // replayed as soon as pointer lock is acquired.
+      if (!enabledRef.current || !isLockedRef.current) return;
 
       switch (event.code) {
         case 'KeyW':
@@ -137,6 +141,7 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
     const handleWindowBlur = () => {
       clearMovementKeys();
       controlsRef.current?.unlock?.();
+      isLockedRef.current = false;
       setIsLocked(false);
     };
 
@@ -162,6 +167,7 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
     if (!enabled) {
       clearMovementKeys();
       controlsRef.current?.unlock?.();
+      isLockedRef.current = false;
       setIsLocked(false);
     }
   }, [clearMovementKeys, enabled]);
@@ -245,9 +251,13 @@ export default function CharacterController({ enabled = true, spawnLocation }: P
     }
   });
 
-  const handleLock = () => setIsLocked(true);
+  const handleLock = () => {
+    isLockedRef.current = true;
+    setIsLocked(true);
+  };
   const handleUnlock = () => {
     clearMovementKeys();
+    isLockedRef.current = false;
     setIsLocked(false);
   };
 

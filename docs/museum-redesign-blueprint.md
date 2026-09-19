@@ -19,8 +19,8 @@ Implemented in `museum-layout-v2.ts` and `MuseumArchitectureLayer`:
 
 The academic exhibit layer is implemented in Phase 6D. The Phase 6E visual
 system is now implemented through `MuseumLighting` and the centralized museum
-visual theme. Runtime profiling, deployment verification, and final technical
-freeze remain deferred to Phase 6F.
+visual theme. Phase 6F completed the static/build audit and technical freeze;
+browser runtime and deployed-asset checks remain explicit release QA tasks.
 
 ## Phase 6D academic exhibit status
 
@@ -52,7 +52,8 @@ Implemented in `museum-visual-theme.ts` and `MuseumLighting`:
 - restrained warm interaction highlighting;
 - no bloom, fog, SSAO, depth of field, external HDR, or new asset requests.
 
-The final 3D technical audit and performance/deployment freeze remain Phase 6F.
+The final 3D technical audit and performance/deployment freeze are recorded in
+`docs/museum-final-audit.md` and `docs/museum-performance.md`.
 
 ## Recommendation
 
@@ -244,16 +245,20 @@ qa-zone05-alliance-close, qa-zone06, qa-zone07, and qa-station-close. These are
 review viewpoints only; they must not alter the production spawn or camera
 controls.
 
-## Phase 6E → 6F handoff
+## Phase 6F freeze status
 
-Before technical freeze:
+Completed static/build audit:
 
-1. run the physical-layout static validation;
-2. verify the 7/7 zone-entry and 17/17 station reachability result;
-3. perform browser screenshot and walk-through QA at the fixed viewpoints;
-4. verify movement, collision, occlusion, all nine artifact roots, and all 17
-   procedural stations;
-5. keep the GLB validator and protected-node baseline unchanged;
-6. preserve the open circulation model while reviewing the final visual system;
-7. run runtime profiling, network/deployment verification, and final 3D
-   regression checks in Phase 6F.
+1. physical layout and academic-exhibit assertions pass;
+2. 7/7 zone entries and 17/17 stations are statically reachable;
+3. GLB validator, protected transforms/bounds, 9 artifact roots, and 4 GLB
+   collision nodes pass;
+4. cached interaction, collision, occlusion, input cleanup, dynamic loading,
+   and fallback boundaries were reviewed;
+5. the production GLB hash and byte size remain unchanged;
+6. the only confirmed code correction was the pre-pointer-lock key guard in
+   `CharacterController`.
+
+Human browser profiling, deployed `/museum.glb` verification, and final
+cross-device interaction checks remain release QA items rather than changes to
+the frozen architecture. Phase 7 was not started.
